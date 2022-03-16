@@ -7,10 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 @Slf4j
 public class ClientApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(ClientApplication.class, args);
         log.info("Client start");
     }
-
 }

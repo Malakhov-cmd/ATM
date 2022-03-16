@@ -1,0 +1,15 @@
+spring:
+  profiles:
+    active: dev
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: 13285287485-plk0lct4msusilh6gde8p50kjcbdmuod.apps.googleusercontent.com
+            clientSecret: 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
+          github:
+            clientId: 90ebce1b93ab0b7d2cf5
+            clientSecret: a896d0b2f96bb1c8c915eacbb276e6d95c09d727
+server:
+  port: 9000
