@@ -1,7 +1,7 @@
 package com.atm.client.controller;
 
-import com.atm.client.service.CreateUserDTOService;
-import lombok.AllArgsConstructor;
+import com.atm.client.dto.UserDTO;
+import com.atm.client.service.CreateUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,18 +18,21 @@ public class WelcomeController {
     @Value("${spring.profiles.active}")
     private String activeProfile;
 
-    private CreateUserDTOService createUserDTOService = new CreateUserDTOService();
+    private final CreateUserService createUserService = new CreateUserService();
 
     @GetMapping("/")
     public String loadTemplate(
             Model model,
             @AuthenticationPrincipal OAuth2User principal
     ) {
-        log.info("load template");
+        log.info("Load template");
 
-        if (principal != null){
-           model.addAttribute("user", createUserDTOService.createUserDTO(principal));
-            log.info("load user from Oauth");
+        if (principal != null) {
+            log.info("Load user from Oauth");
+            model.addAttribute("user", createUserService.createUser(principal));
+        } else {
+            log.info("User is not authorized");
+            model.addAttribute("user", new UserDTO());
         }
 
         model.addAttribute("isDevMode", "dev".equals(activeProfile));

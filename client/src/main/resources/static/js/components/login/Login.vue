@@ -98,10 +98,10 @@ export default {
         axios.post('/login/default?username=' + this.usernameInputed + '&password=' + this.passwordInputed)
             .then(function (response) {
               if (response.data !== null) {
-
                 isSentAndReceived = true
+
+                window.frontendData = response.data
               }
-              console.log(response.data)
             })
             .catch(function (error) {
               console.log(error);
@@ -109,9 +109,16 @@ export default {
         const interval = setInterval(() => {
           if (isSentAndReceived) {
 
+            if (frontendData.username === ""
+                && frontendData.password === "") {
+              this.toastCreation("You enter invalid data")
+            } else {
+              location.href = "/#/home"
+            }
+
             clearInterval(interval)
           } else {
-            this.toastCreation("You enter invalid data")
+            this.toastCreation("You probably enter invalid data")
             clearInterval(interval)
           }
         }, 1000)
@@ -125,6 +132,14 @@ export default {
     },
     githubOauth() {
       location.href = '/oauth2/authorization/github'
+    }
+  },
+  mounted() {
+    if (frontendData !== null) {
+      if (frontendData.username !== "" && frontendData.password !== ""
+          && frontendData.username !== null && frontendData.password !== null) {
+        location.href = "/#/home"
+      }
     }
   }
 }

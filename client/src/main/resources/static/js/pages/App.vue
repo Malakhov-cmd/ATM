@@ -1,15 +1,16 @@
 <template>
   <div class="main-component" id="app">
-    <Login/>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-import Login from "../components/login/Login.vue";
 
 export default {
   name: "App",
-  components: {Login}
+  mounted() {
+    location.href = "/#/login"
+  }
 }
 </script>
 
