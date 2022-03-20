@@ -24,7 +24,7 @@ public class CreateCardService {
             CardDTO cardDTO = new CardDTO(number, dateValid, owner, CVV, username, password);
 
             Sender<CardDTO> cardDTOSender = new Sender<>();
-            return cardDTOSender.sendCreationCardRequestToServer(cardDTO, "http://localhost:9090/card/create");
+            return cardDTOSender.sendCreationEntityRequestToServer(cardDTO, "http://localhost:9090/card/create");
         }
         log.error("Validation is failed! Card has incorrect data.");
         return Optional.empty();

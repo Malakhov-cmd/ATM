@@ -2,7 +2,6 @@ package com.atm.client.service.sender;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
@@ -14,7 +13,7 @@ import java.util.Optional;
 @Slf4j
 public class Sender<T> {
 
-    public Optional<T> sendCreationCardRequestToServer(
+    public Optional<T> sendCreationEntityRequestToServer(
             T objectDTO, String urlAddressToServer
     ) {
         RestTemplate restTemplate = new RestTemplate();
@@ -23,7 +22,7 @@ public class Sender<T> {
 
         if (optionalHttpEntity.isPresent()){
             HttpEntity<String> entity = optionalHttpEntity.get();
-            sendLoginRequest(restTemplate, entity, urlAddressToServer);
+            sendRequest(restTemplate, entity, urlAddressToServer);
 
             return Optional.of(objectDTO);
         } else {
@@ -49,13 +48,13 @@ public class Sender<T> {
         return headers;
     }
 
-    private void sendLoginRequest(
+    private void sendRequest(
             RestTemplate restTemplate, HttpEntity<String> entity, String urlAddressToServer
     ) {
-        ResponseEntity<String> loginResponse = restTemplate
+        ResponseEntity<String> response = restTemplate
                 .exchange(urlAddressToServer, HttpMethod.POST, entity, String.class);
 
-        if (loginResponse.getStatusCode() == HttpStatus.OK) {
+        if (response.getStatusCode() == HttpStatus.OK) {
             log.info("Success sent request");
         } else {
             log.error("Request has been denied");

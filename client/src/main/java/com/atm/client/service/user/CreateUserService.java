@@ -1,21 +1,17 @@
 package com.atm.client.service.user;
 
 import com.atm.client.dto.UserDTO;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.atm.client.service.sender.Sender;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.*;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
 
 @Service
 @Slf4j
 public class CreateUserService {
-
-    public UserDTO createUser(
+    public Optional<UserDTO> createUserFromOauthData(
             OAuth2User principal
     ) {
         String login = principal.getAttribute("name");
@@ -23,7 +19,9 @@ public class CreateUserService {
 
         log.info("Parsed values from oauth - username: " + login + " password: " + password);
 
-        return sendCreationUserRequestToServer(login, password).orElse(new UserDTO());
+        UserDTO userDTO = new UserDTO(login, password);
+
+        return sendUserCreationRequestToServer(userDTO);
     }
 
     private String getPassword(OAuth2User principal) {
@@ -33,49 +31,8 @@ public class CreateUserService {
                 .orElseGet(() -> principal.getAttribute("id").toString());
     }
 
-    public Optional<UserDTO> sendCreationUserRequestToServer(String login, String password) {
-        UserDTO userDTO = new UserDTO(login, password);
-
-        RestTemplate restTemplate = new RestTemplate();
-
-        Optional<HttpEntity<String>> optionalHttpEntity = prepareHttpEntity(userDTO);
-
-        if (optionalHttpEntity.isPresent()){
-            HttpEntity<String> entity = optionalHttpEntity.get();
-            sendLoginRequest(restTemplate, entity);
-
-            return Optional.of(userDTO);
-        } else {
-            return Optional.empty();
-        }
-    }
-
-    private Optional<HttpEntity<String>> prepareHttpEntity(UserDTO userDTO) {
-        HttpHeaders headers = getHttpHeaders();
-
-        try {
-            return Optional.of(new HttpEntity<>(new ObjectMapper().writeValueAsString(userDTO), headers));
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        return Optional.empty();
-    }
-
-    private HttpHeaders getHttpHeaders() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        return headers;
-    }
-
-    private void sendLoginRequest(RestTemplate restTemplate, HttpEntity<String> entity) {
-        ResponseEntity<String> loginResponse = restTemplate
-                .exchange("http://localhost:9090/user/registration", HttpMethod.POST, entity, String.class);
-
-        if (loginResponse.getStatusCode() == HttpStatus.OK) {
-            log.info("Success login confirmed");
-        } else {
-            log.error("Request has been denied");
-        }
+    public Optional<UserDTO> sendUserCreationRequestToServer(UserDTO userDTO) {
+        Sender<UserDTO> userDTOSender = new Sender<>();
+        return userDTOSender.sendCreationEntityRequestToServer(userDTO, "http://localhost:9090/user/registration");
     }
 }

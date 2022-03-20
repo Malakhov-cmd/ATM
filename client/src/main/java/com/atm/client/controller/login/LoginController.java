@@ -27,6 +27,6 @@ public class LoginController {
                 " user name: " + newUser.getUsername() +
                 " user password " + newUser.getPassword());
 
-       return createUserDTOService.sendCreationUserRequestToServer(username, password).orElse(new UserDTO());
+       return createUserDTOService.sendUserCreationRequestToServer(new UserDTO(username, password)).orElse(new UserDTO());
     }
 }

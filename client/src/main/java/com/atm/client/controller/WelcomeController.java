@@ -29,7 +29,7 @@ public class WelcomeController {
 
         if (principal != null) {
             log.info("Load user from Oauth");
-            model.addAttribute("user", createUserService.createUser(principal));
+            model.addAttribute("user", createUserService.createUserFromOauthData(principal).orElse(new UserDTO()));
         } else {
             log.info("User is not authorized");
             model.addAttribute("user", new UserDTO());
