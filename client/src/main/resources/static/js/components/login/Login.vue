@@ -40,7 +40,7 @@
     </div>
 
     <div class="submit-btn">
-      <b-button variant="outline-primary" v-on:click="defaultAuth">
+      <b-button variant="outline-success" v-on:click="defaultAuth">
         Submit
       </b-button>
     </div>
@@ -95,7 +95,8 @@ export default {
 
     defaultAuth() {
       if (this.isSubmitAvailable()) {
-        axios.post('/login/default?username=' + this.usernameInputed + '&password=' + this.passwordInputed)
+        axios.post('/login/default?username=' + this.usernameInputed
+            + '&password=' + this.passwordInputed)
             .then(function (response) {
               if (response.data !== null) {
                 isSentAndReceived = true

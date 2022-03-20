@@ -1,7 +1,7 @@
 package com.atm.client.controller.login;
 
 import com.atm.client.dto.UserDTO;
-import com.atm.client.service.CreateUserService;
+import com.atm.client.service.user.CreateUserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;

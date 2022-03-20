@@ -1,24 +1,25 @@
 package com.server.server.domain;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.Set;
 
 @Entity
-@Table(name = "usr")
+@Table(name = "card")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class User {
+public class Card {
     private @Id @GeneratedValue Long id;
-    private String userName;
-    private String password;
 
-    @OneToMany(mappedBy = "user_id")
-    private Set<Card> cards;
+    private Long number;
+    private String dateValid;
+    private String owner;
+    private String CVV;
 
+    @ManyToOne()
+    @JoinTable(name = "user_id")
+    private User user_id;
 }

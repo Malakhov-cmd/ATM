@@ -1,4 +1,4 @@
-package com.atm.client.service;
+package com.atm.client.service.user;
 
 import com.atm.client.dto.UserDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
