@@ -21,12 +21,14 @@ public class LoginController {
             @RequestParam String username,
             @RequestParam String password
     ) {
-        UserDTO newUser = new UserDTO(username, password);
+        UserDTO newUser = new UserDTO(username, password, null);
 
         log.info("Inputed data -" +
                 " user name: " + newUser.getUsername() +
                 " user password " + newUser.getPassword());
 
-       return createUserDTOService.sendUserCreationRequestToServer(new UserDTO(username, password)).orElse(new UserDTO());
+       return createUserDTOService
+               .sendUserCreationRequestToServer(new UserDTO(username, password, null))
+               .orElse(new UserDTO());
     }
 }

@@ -13,6 +13,7 @@ public class CardDTO {
     private String owner;
     private String CVV;
 
+    private Double balance;
+
     private String username;
-    private String password;
 }

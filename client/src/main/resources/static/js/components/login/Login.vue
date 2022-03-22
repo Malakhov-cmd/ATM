@@ -98,11 +98,9 @@ export default {
         axios.post('/login/default?username=' + this.usernameInputed
             + '&password=' + this.passwordInputed)
             .then(function (response) {
-              if (response.data !== null) {
                 isSentAndReceived = true
 
                 window.frontendData = response.data
-              }
             })
             .catch(function (error) {
               console.log(error);
@@ -117,9 +115,6 @@ export default {
               location.href = "/#/home"
             }
 
-            clearInterval(interval)
-          } else {
-            this.toastCreation("You probably enter invalid data")
             clearInterval(interval)
           }
         }, 1000)
@@ -142,6 +137,8 @@ export default {
         location.href = "/#/home"
       }
     }
+
+    this.toastCreation("Welcome! Chose way to authorize")
   }
 }
 </script>
@@ -179,5 +176,9 @@ export default {
   font-size: 25px;
   font-family: sans-serif;
   margin-bottom: 17px;
+}
+
+.toasted-container{
+  position: absolute;
 }
 </style>

@@ -14,15 +14,15 @@ import java.util.Optional;
 public class Sender<T> {
 
     public Optional<T> sendCreationEntityRequestToServer(
-            T objectDTO, String urlAddressToServer
+            T objectDTO, String urlAddressToServer, HttpMethod httpMethod
     ) {
         RestTemplate restTemplate = new RestTemplate();
 
         Optional<HttpEntity<String>> optionalHttpEntity = prepareHttpEntity(objectDTO);
 
-        if (optionalHttpEntity.isPresent()){
+        if (optionalHttpEntity.isPresent()) {
             HttpEntity<String> entity = optionalHttpEntity.get();
-            sendRequest(restTemplate, entity, urlAddressToServer);
+            sendRequest(restTemplate, entity, urlAddressToServer, httpMethod);
 
             return Optional.of(objectDTO);
         } else {
@@ -49,10 +49,10 @@ public class Sender<T> {
     }
 
     private void sendRequest(
-            RestTemplate restTemplate, HttpEntity<String> entity, String urlAddressToServer
+            RestTemplate restTemplate, HttpEntity<String> entity, String urlAddressToServer, HttpMethod httpMethod
     ) {
         ResponseEntity<String> response = restTemplate
-                .exchange(urlAddressToServer, HttpMethod.POST, entity, String.class);
+                .exchange(urlAddressToServer, httpMethod, entity, String.class);
 
         if (response.getStatusCode() == HttpStatus.OK) {
             log.info("Success sent request");

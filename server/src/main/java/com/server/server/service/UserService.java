@@ -17,10 +17,8 @@ public class UserService {
 
     public void createUser(UserDTO userDTO){
         Optional<User> findedUser = Optional
-                .ofNullable(userDetailsRepo.findByUserNameAndPassword(
-                        userDTO.getUsername(),
-                        userDTO.getPassword()
-                ));
+                .ofNullable(userDetailsRepo.findByUserName(
+                        userDTO.getUsername()));
 
         if (findedUser.isEmpty()) {
             log.info("User with  this credential not found!");

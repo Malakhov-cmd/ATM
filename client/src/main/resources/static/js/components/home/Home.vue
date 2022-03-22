@@ -12,9 +12,6 @@
 
     <main class="px-3">
       <h1>Enter card data</h1>
-      <div class="user-cards">
-
-      </div>
 
       <div class="user-add-card">
         <b-button
@@ -23,7 +20,7 @@
             aria-controls="collapse-4"
             @click="isCollapsedZoneUserAddCardVisible = !isCollapsedZoneUserAddCardVisible"
         >
-          Toggle Collapse
+          Open card input fields
         </b-button>
         <b-collapse id="collapse-4" v-model="isCollapsedZoneUserAddCardVisible" class="mt-2">
           <b-form class="form-of-adding-new-card nepmorphism">
@@ -138,6 +135,10 @@
           </b-form>
         </b-collapse>
       </div>
+
+      <div class="user-cards">
+
+      </div>
     </main>
 
     <footer class="mt-auto text-white-50">
@@ -155,6 +156,9 @@
 import axios from "axios";
 
 let isSentAndReceived = false
+let newCard = null
+
+let userCards = null
 
 export default {
   name: "Home",
@@ -162,6 +166,8 @@ export default {
     return {
       name: frontendData.username,
       isAnyCardsExist: false,
+
+      addedCard: null,
 
       isCollapsedZoneUserAddCardVisible: false,
       card: {
@@ -178,9 +184,25 @@ export default {
         owner: '',
         cvv: ''
       },
+
+      userCards: null
     }
   },
   methods: {
+    cardFieldCheck() {
+      return (
+          this.card.number.first.length === 4 &&
+          this.card.number.second.length === 4 &&
+          this.card.number.third.length === 4 &&
+          this.card.number.fourth.length === 4 &&
+
+          this.card.date.month.length === 2 &&
+          this.card.date.year.length === 2 &&
+
+          this.card.owner.length > 0  &&
+          this.card.cvv.length === 3 );
+    },
+
     toastCreation(text) {
       this.$toasted.error(text, {
         position: 'top-right',
@@ -195,37 +217,82 @@ export default {
       })
     },
 
+    cleanInputsFienls() {
+      this.card.number.first = ''
+      this.card.number.second = ''
+      this.card.number.third = ''
+      this.card.number.fourth = ''
+
+      this.card.date.month = ''
+      this.card.date.year = ''
+
+      this.card.owner = ''
+      this.card.cvv = ''
+
+      this.isCollapsedZoneUserAddCardVisible = false
+    },
+
     addCard() {
-      axios.post('/card/add?number=' + this.card.number.first + this.card.number.second + this.card.number.third + this.card.number.fourth
-          + '&dateValid=' + this.card.date.month + this.card.date.year
-          + '&owner=' + this.card.owner
-          + '&CVV=' + this.card.cvv
-          + '&username=' + frontendData.username
-          + '&password=' + frontendData.password)
-          .then(function (response) {
-            if (response.data !== null) {
+      if (this.cardFieldCheck()) {
+        axios.post('/card/add?number=' + this.card.number.first + this.card.number.second + this.card.number.third + this.card.number.fourth
+            + '&dateValid=' + this.card.date.month + this.card.date.year
+            + '&owner=' + this.card.owner
+            + '&CVV=' + this.card.cvv
+            + '&username=' + frontendData.username)
+            .then(function (response) {
               isSentAndReceived = true
+              newCard = response.data
+            })
+            .catch(function (error) {
+              console.log(error)
+            })
+        const interval = setInterval(() => {
+          if (isSentAndReceived) {
+            this.addedCard = newCard
 
-              console.log(response.data)
+            if (this.addedCard.owner === null || this.addedCard.number === null) {
+              this.toastCreation("You enter wrong data. Please check your inputs")
+            } else {
+              this.toastCreation("Card successfully added")
+
+              this.cleanInputsFienls()
             }
-          })
-          .catch(function (error) {
-            console.log(error);
-          })
-      const interval = setInterval(() => {
-        if (isSentAndReceived) {
 
-
-          clearInterval(interval)
-        } else {
-          this.toastCreation("You probably enter invalid data")
-          clearInterval(interval)
-        }
-      }, 1000)
+            clearInterval(interval)
+          }
+        }, 1000)
+      } else {
+        this.toastCreation("Enter some data first")
+      }
     }
   },
   mounted() {
+    this.toastCreation("You are successfully authorized")
 
+    axios.get('/card/get', {
+      params: {
+        username: frontendData.username,
+        password: frontendData.password
+      }
+    })
+        .then(function (response) {
+          isSentAndReceived = true
+          userCards = response.data
+
+          console.log(response.data)
+        })
+        .catch(function (error) {
+          console.log(error)
+        })
+    const interval = setInterval(() => {
+      if (isSentAndReceived) {
+        this.userCards = userCards
+
+        console.log(this.userCards)
+
+        clearInterval(interval)
+      }
+    }, 1000)
   }
 }
 </script>
@@ -239,13 +306,6 @@ export default {
   align-content: space-around;
   justify-content: space-around;
   padding: 45px;
-}
-
-.btn-secondary,
-.btn-secondary:hover,
-.btn-secondary:focus {
-  color: #333;
-  text-shadow: none;
 }
 
 body {

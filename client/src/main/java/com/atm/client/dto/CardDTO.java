@@ -2,10 +2,10 @@ package com.atm.client.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Data
 public class CardDTO {
     private Long number;
@@ -13,6 +13,7 @@ public class CardDTO {
     private String owner;
     private String CVV;
 
+    private Double balance;
+
     private String username;
-    private String password;
 }

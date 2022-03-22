@@ -1,8 +1,10 @@
 package com.atm.client.service.card;
 
 import com.atm.client.dto.CardDTO;
+import com.atm.client.dto.UserDTO;
 import com.atm.client.service.sender.Sender;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -17,14 +19,13 @@ public class CreateCardService {
     Pattern ownerPattern = Pattern.compile("(([A-Z]+)\\s([A-Z]+))");
 
     public Optional<CardDTO> createCard(
-            Long number, String dateValid, String owner,
-            String CVV, String username, String password
+            Long number, String dateValid, String owner, String CVV, String username
     ){
         if(validate(number, dateValid, owner, CVV)){
-            CardDTO cardDTO = new CardDTO(number, dateValid, owner, CVV, username, password);
+            CardDTO cardDTO = new CardDTO(number, dateValid, owner, CVV, 0.0, username);
 
             Sender<CardDTO> cardDTOSender = new Sender<>();
-            return cardDTOSender.sendCreationEntityRequestToServer(cardDTO, "http://localhost:9090/card/create");
+            return cardDTOSender.sendCreationEntityRequestToServer(cardDTO, "http://localhost:9090/card/create", HttpMethod.POST);
         }
         log.error("Validation is failed! Card has incorrect data.");
         return Optional.empty();

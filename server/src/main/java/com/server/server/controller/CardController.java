@@ -1,13 +1,14 @@
 package com.server.server.controller;
 
+import com.server.server.domain.Card;
 import com.server.server.dto.CardDTO;
+import com.server.server.dto.UserDTO;
 import com.server.server.service.CardService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Set;
 
 @RestController
 @RequestMapping("/card")
@@ -28,5 +29,16 @@ public class CardController {
                 " card cvv code: " + cardDTO.getCVV());
 
         cardService.createCard(cardDTO);
+    }
+
+    @GetMapping("/get")
+    public Set<Card> getUserCards(
+            @RequestParam String username
+    ) {
+        log.info("Request of getting all cards." +
+                " Incoming data -" +
+                " username: " + username);
+
+        return cardService.getUserCards(new UserDTO(username, null, null));
     }
 }

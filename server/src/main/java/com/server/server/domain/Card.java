@@ -1,17 +1,21 @@
 package com.server.server.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "card")
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
+@ToString
 public class Card {
+    @JsonIgnore
     private @Id @GeneratedValue Long id;
 
     private Long number;
@@ -19,7 +23,23 @@ public class Card {
     private String owner;
     private String CVV;
 
-    @ManyToOne()
-    @JoinTable(name = "user_id")
-    private User user_id;
+    private Double balance;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
+    private User user;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Card card = (Card) o;
+        return id != null && Objects.equals(id, card.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
+    }
 }
