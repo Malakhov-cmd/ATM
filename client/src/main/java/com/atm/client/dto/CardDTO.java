@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Data
@@ -16,4 +18,6 @@ public class CardDTO {
     private Double balance;
 
     private String username;
+
+    List<OperationDTO> operationDTOList;
 }

@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -22,7 +23,7 @@ public class CreateCardService {
             Long number, String dateValid, String owner, String CVV, String username
     ){
         if(validate(number, dateValid, owner, CVV)){
-            CardDTO cardDTO = new CardDTO(number, dateValid, owner, CVV, 0.0, username);
+            CardDTO cardDTO = new CardDTO(number, dateValid, owner, CVV, 0.0, username, new ArrayList<>());
 
             Sender<CardDTO> cardDTOSender = new Sender<>();
             return cardDTOSender.sendCreationEntityRequestToServer(cardDTO, "http://localhost:9090/card/create", HttpMethod.POST);

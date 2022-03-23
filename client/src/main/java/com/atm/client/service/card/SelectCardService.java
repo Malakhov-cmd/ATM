@@ -16,8 +16,8 @@ import java.util.List;
 @Slf4j
 public class SelectCardService {
 
-    public List<CardDTO> getCards(String username, String password){
-        ResponseEntity<String> result = sendRequestToFindAllUserCards(username, password);
+    public List<CardDTO> getCards(String username){
+        ResponseEntity<String> result = sendRequestToFindAllUserCards(username);
 
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -44,8 +44,8 @@ public class SelectCardService {
         return new CardDTO();
     }
 
-    private ResponseEntity<String> sendRequestToFindAllUserCards(String username, String password) {
-        final String uri = "http://localhost:9090/card/get/all?username=" + username + "&password=" + password;
+    private ResponseEntity<String> sendRequestToFindAllUserCards(String username) {
+        final String uri = "http://localhost:9090/card/get/all?username=" + username;
 
         RestTemplate restTemplate = new RestTemplate();
         return restTemplate.getForEntity(uri, String.class);

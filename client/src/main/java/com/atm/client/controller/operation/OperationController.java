@@ -21,7 +21,7 @@ public class OperationController {
             @RequestParam Double value
 
     ) {
-        log.info("Request of withdraw." +
+        log.info("Request of create operation." +
                 " Incoming data -" +
                 " card number: " + cardNumber +
                 " operation type: " + type +

@@ -220,7 +220,7 @@ export default {
         cvv: ''
       },
 
-      userCards: null
+      userCards: []
     }
   },
   methods: {
@@ -290,6 +290,8 @@ export default {
             } else {
               this.toastCreation("Card successfully added")
 
+              this.saveNewCardToLocalData()
+
               this.cleanInputsFienls()
             }
 
@@ -299,6 +301,18 @@ export default {
       } else {
         this.toastCreation("Enter some data first")
       }
+    },
+
+    saveNewCardToLocalData() {
+      this.userCards[this.userCards.length] = {
+        balance: this.addedCard.balance,
+        cvv: this.addedCard.cvv,
+        dateValid: this.addedCard.dateValid,
+        number: this.addedCard.number,
+        operationDTOList: this.addedCard.operationDTOList,
+        owner: this.addedCard.owner,
+        username: this.addedCard.username
+      }
     }
   },
   mounted() {
@@ -306,8 +320,7 @@ export default {
 
     axios.get('/card/get/all', {
       params: {
-        username: frontendData.username,
-        password: frontendData.password
+        username: frontendData.username
       }
     })
         .then(function (response) {
@@ -321,17 +334,15 @@ export default {
       if (isSentAndReceived) {
         this.userCards = userCards
 
-        console.log(this.userCards)
-
         clearInterval(interval)
       }
-    }, 1000)
+    }, 10)
   }
 }
 </script>
 
 <style scoped>
-.main{
+.main {
   overflow: auto;
   max-height: 80vh;
 }
@@ -459,38 +470,38 @@ body {
   margin-left: 230px;
 }
 
-.user-cards{
+.user-cards {
   padding: 45px;
 }
 
-.user-cards-label{
+.user-cards-label {
   margin-top: 55px;
 }
 
-.user-card{
+.user-card {
   margin-bottom: 75px;
   padding: 55px;
 }
 
-.user-card-element{
+.user-card-element {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
 }
 
-.user-card-number{
+.user-card-number {
   margin-left: 175px;
 }
 
-.user-card-date-valid{
+.user-card-date-valid {
   margin-left: 160px;
 }
 
-.user-card-owner{
+.user-card-owner {
   margin-left: 135px;
 }
 
-.user-card-balance{
+.user-card-balance {
   margin-left: 180px;
 }
 </style>

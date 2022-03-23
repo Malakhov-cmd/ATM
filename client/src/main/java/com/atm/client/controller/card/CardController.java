@@ -38,15 +38,13 @@ public class CardController {
 
     @GetMapping("/get/all")
     public List<CardDTO> getAllUserCards(
-            @RequestParam String username,
-            @RequestParam String password
+            @RequestParam String username
     ) {
         log.info("Request of getting all cards." +
                 " Incoming data -" +
-                " username: " + username +
-                " password: " + password );
+                " username: " + username);
 
-        return selectCardService.getCards(username, password);
+        return selectCardService.getCards(username);
     }
 
     @GetMapping("/get")

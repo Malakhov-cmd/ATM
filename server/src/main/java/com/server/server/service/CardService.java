@@ -3,6 +3,7 @@ package com.server.server.service;
 import com.server.server.domain.Card;
 import com.server.server.domain.User;
 import com.server.server.dto.CardDTO;
+import com.server.server.dto.OperationDTO;
 import com.server.server.dto.UserDTO;
 import com.server.server.repo.CardRepo;
 import com.server.server.repo.UserDetailsRepo;
@@ -10,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -50,6 +52,7 @@ public class CardService {
         newCard.setBalance(0.0);
 
         newCard.setUser(owner);
+        newCard.setOperations(new ArrayList<>());
 
         return newCard;
     }
@@ -68,7 +71,11 @@ public class CardService {
                 .findByUserName(userDTO.getUsername())
                 .getCards()
                 .stream()
-                .map((card -> new CardDTO(card.getNumber(), card.getDateValid(), card.getCVV(), card.getOwner(), card.getBalance(), card.getUser().getUserName())))
+                .map((card -> new CardDTO(card.getNumber(), card.getDateValid(), card.getOwner(), card.getCVV(), card.getBalance(), card.getUser().getUserName(),
+                        card.getOperations()
+                                .stream()
+                                .map(operation -> new OperationDTO(operation.getCardNumber(), operation.getType(), operation.getUsername(), operation.getValue(), operation.getTime()))
+                                .collect(Collectors.toList()))))
                 .collect(Collectors.toSet());
     }
 
@@ -81,7 +88,11 @@ public class CardService {
                 .findFirst()
                 .orElse(new Card());
 
-        return new CardDTO(card.getNumber(), card.getDateValid(), card.getOwner(), card.getCVV(),
-               card.getBalance(), card.getUser().getUserName());
+        return new CardDTO(card.getNumber(), card.getDateValid(), card.getOwner(),
+                card.getCVV(), card.getBalance(), card.getUser().getUserName(),
+                card.getOperations()
+                        .stream()
+                        .map(operation -> new OperationDTO(operation.getCardNumber(), operation.getType(), operation.getUsername(), operation.getValue(), operation.getTime()))
+                        .collect(Collectors.toList()));
     }
 }
