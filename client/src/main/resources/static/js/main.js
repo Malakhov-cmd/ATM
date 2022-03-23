@@ -6,10 +6,12 @@ import './plugin/bootstrapPlugin'
 import App from "./pages/App.vue";
 import Login from "./components/login/Login.vue";
 import Home from "./components/home/Home.vue";
+import Card from "./components/card/Card.vue";
 
 const routes = [
     {path: '/login', component: Login},
-    {path: '/home', component: Home}
+    {path: '/home', component: Home},
+    {path: '/card/:cardNumber/user/:userName', component: Card},
 ]
 
 Vue.use(VueRouter)

@@ -36,8 +36,8 @@ public class CardController {
         return createCardService.createCard(number, dateValid, owner, CVV, username).orElse(new CardDTO());
     }
 
-    @GetMapping("/get")
-    public List<CardDTO> getUserCards(
+    @GetMapping("/get/all")
+    public List<CardDTO> getAllUserCards(
             @RequestParam String username,
             @RequestParam String password
     ) {
@@ -47,5 +47,18 @@ public class CardController {
                 " password: " + password );
 
         return selectCardService.getCards(username, password);
+    }
+
+    @GetMapping("/get")
+    public CardDTO getUserCard(
+            @RequestParam String username,
+            @RequestParam String cardNumber
+    ) {
+        log.info("Request of getting card." +
+                " Incoming data -" +
+                " username: " + username +
+                " card number: " + cardNumber );
+
+        return selectCardService.getCard(username, cardNumber);
     }
 }

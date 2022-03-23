@@ -10,7 +10,7 @@
       </div>
     </header>
 
-    <main class="px-3">
+    <main class="px-3 main">
       <h1>Enter card data</h1>
 
       <div class="user-add-card">
@@ -127,7 +127,7 @@
             </b-form-group>
 
             <div class="btm-card-add-submit">
-              <b-button variant="outline-success" v-on:click="addCard">
+              <b-button variant="success" v-on:click="addCard">
                 Add
               </b-button>
             </div>
@@ -136,8 +136,43 @@
         </b-collapse>
       </div>
 
-      <div class="user-cards">
+      <div class="user-cards-zone">
+        <div v-if="userCards === null">
+          <h2 class="user-cards-label">There are no cards yet</h2>
+        </div>
+        <div v-if="userCards !== null">
+          <h2 class="user-cards-label">
+            Your cards
+          </h2>
+          <div class="user-cards">
+            <div class="user-card nepmorphism" v-for="(value) in userCards">
+              <div class="user-card-element">
+                <h5>Number: </h5>
+                <div class="user-card-number">{{ value.number }}</div>
+              </div>
+              <div class="user-card-element">
+                <h5>Data valid: </h5>
+                <div class="user-card-date-valid">{{ value.dateValid }}</div>
+              </div>
+              <div class="user-card-element">
+                <h5>Owner name: </h5>
+                <div class="user-card-owner">{{ value.owner }}</div>
+              </div>
+              <div class="user-card-element">
+                <h5>Balance: </h5>
+                <div class="user-card-balance">{{ value.balance }} ₽</div>
+              </div>
 
+              <div class="user-card-redirect-btn">
+                <router-link :to="/card/ + value.number + /user/ + name">
+                  <b-button variant="success">
+                    Choose
+                  </b-button>
+                </router-link>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
 
@@ -199,8 +234,8 @@ export default {
           this.card.date.month.length === 2 &&
           this.card.date.year.length === 2 &&
 
-          this.card.owner.length > 0  &&
-          this.card.cvv.length === 3 );
+          this.card.owner.length > 0 &&
+          this.card.cvv.length === 3);
     },
 
     toastCreation(text) {
@@ -269,7 +304,7 @@ export default {
   mounted() {
     this.toastCreation("You are successfully authorized")
 
-    axios.get('/card/get', {
+    axios.get('/card/get/all', {
       params: {
         username: frontendData.username,
         password: frontendData.password
@@ -278,8 +313,6 @@ export default {
         .then(function (response) {
           isSentAndReceived = true
           userCards = response.data
-
-          console.log(response.data)
         })
         .catch(function (error) {
           console.log(error)
@@ -298,6 +331,11 @@ export default {
 </script>
 
 <style scoped>
+.main{
+  overflow: auto;
+  max-height: 80vh;
+}
+
 .main-app-content-page {
   min-height: 100vh;
   min-width: 100vw;
@@ -346,6 +384,33 @@ body {
   -10px -10px 21px #3d3c3c;
 }
 
+.main::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+.main::-webkit-scrollbar-thumb {
+  border-width: 1px 1px 1px 2px;
+  border-color: #9f1b1b;
+  background-color: #aaa;
+  border-radius: 7px;
+}
+
+.main::-webkit-scrollbar-thumb:hover {
+  border-width: 1px 1px 1px 2px;
+  border-color: #555;
+  background-color: #777;
+}
+
+.main::-webkit-scrollbar-track {
+  border-width: 0;
+}
+
+.main::-webkit-scrollbar-track:hover {
+  border-left: solid 1px #aaa;
+  background-color: #eee;
+}
+
 .form-of-adding-new-card {
   margin-top: 47px;
   padding: 45px;
@@ -392,5 +457,40 @@ body {
 
 .input-cvv {
   margin-left: 230px;
+}
+
+.user-cards{
+  padding: 45px;
+}
+
+.user-cards-label{
+  margin-top: 55px;
+}
+
+.user-card{
+  margin-bottom: 75px;
+  padding: 55px;
+}
+
+.user-card-element{
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.user-card-number{
+  margin-left: 175px;
+}
+
+.user-card-date-valid{
+  margin-left: 160px;
+}
+
+.user-card-owner{
+  margin-left: 135px;
+}
+
+.user-card-balance{
+  margin-left: 180px;
 }
 </style>

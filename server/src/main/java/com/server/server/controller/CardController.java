@@ -31,8 +31,8 @@ public class CardController {
         cardService.createCard(cardDTO);
     }
 
-    @GetMapping("/get")
-    public Set<Card> getUserCards(
+    @GetMapping("/get/all")
+    public Set<CardDTO> getUserCards(
             @RequestParam String username
     ) {
         log.info("Request of getting all cards." +
@@ -40,5 +40,18 @@ public class CardController {
                 " username: " + username);
 
         return cardService.getUserCards(new UserDTO(username, null, null));
+    }
+
+    @GetMapping("/get")
+    public CardDTO getUserCards(
+            @RequestParam String username,
+            @RequestParam String cardNumber
+    ) {
+        log.info("Request of getting card." +
+                " Incoming data -" +
+                " username: " + username +
+                " card number: " + cardNumber );
+
+        return cardService.getUserCard(username, cardNumber);
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -22,10 +23,8 @@ public class CardService {
 
     public void createCard(CardDTO cardDTO) {
         Optional<Card> findedCard = Optional
-                .ofNullable(cardRepo.findByNumberAndCVV(
-                        cardDTO.getNumber(),
-                        cardDTO.getCVV()
-                ));
+                .ofNullable(cardRepo.findByNumber(
+                        cardDTO.getNumber()));
 
         if (findedCard.isEmpty()) {
             log.info("Card not found! Start process of creation");
@@ -64,9 +63,25 @@ public class CardService {
         return owner;
     }
 
-    public Set<Card> getUserCards(UserDTO userDTO) {
+    public Set<CardDTO> getUserCards(UserDTO userDTO) {
         return userDetailsRepo
                 .findByUserName(userDTO.getUsername())
-                .getCards();
+                .getCards()
+                .stream()
+                .map((card -> new CardDTO(card.getNumber(), card.getDateValid(), card.getCVV(), card.getOwner(), card.getBalance(), card.getUser().getUserName())))
+                .collect(Collectors.toSet());
+    }
+
+    public CardDTO getUserCard(String username, String cardNumber) {
+        Card card = userDetailsRepo
+                .findByUserName(username)
+                .getCards()
+                .stream()
+                .filter((cardItem) -> cardItem.getNumber().equals(Long.valueOf(cardNumber)))
+                .findFirst()
+                .orElse(new Card());
+
+        return new CardDTO(card.getNumber(), card.getDateValid(), card.getOwner(), card.getCVV(),
+               card.getBalance(), card.getUser().getUserName());
     }
 }

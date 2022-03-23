@@ -30,8 +30,29 @@ public class SelectCardService {
         return new ArrayList<>();
     }
 
+    public CardDTO getCard(String username, String cardNumber){
+        ResponseEntity<String> result = sendRequestToFindUserCard(username, cardNumber);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try {
+            return objectMapper.readValue(result.getBody(), CardDTO.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        return new CardDTO();
+    }
+
     private ResponseEntity<String> sendRequestToFindAllUserCards(String username, String password) {
-        final String uri = "http://localhost:9090/card/get?username=" + username + "&password=" + password;
+        final String uri = "http://localhost:9090/card/get/all?username=" + username + "&password=" + password;
+
+        RestTemplate restTemplate = new RestTemplate();
+        return restTemplate.getForEntity(uri, String.class);
+    }
+
+    private ResponseEntity<String> sendRequestToFindUserCard(String username, String cardNumber) {
+        final String uri = "http://localhost:9090/card/get/?username=" + username + "&cardNumber=" + cardNumber;
 
         RestTemplate restTemplate = new RestTemplate();
         return restTemplate.getForEntity(uri, String.class);
