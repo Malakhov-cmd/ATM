@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from "vue-router"
 
 import './plugin/bootstrapPlugin'
+import './plugin/apexChartPlugin.js';
 
 import App from "./pages/App.vue";
 import Login from "./components/login/Login.vue";

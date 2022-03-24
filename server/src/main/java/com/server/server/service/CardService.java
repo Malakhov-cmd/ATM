@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -71,6 +72,7 @@ public class CardService {
                 .findByUserName(userDTO.getUsername())
                 .getCards()
                 .stream()
+                .sorted(Comparator.comparing(Card::getId).reversed())
                 .map((card -> new CardDTO(card.getNumber(), card.getDateValid(), card.getOwner(), card.getCVV(), card.getBalance(), card.getUser().getUserName(),
                         card.getOperations()
                                 .stream()

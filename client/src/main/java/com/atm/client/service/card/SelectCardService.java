@@ -1,6 +1,7 @@
 package com.atm.client.service.card;
 
 import com.atm.client.dto.CardDTO;
+import com.atm.client.dto.OperationDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +11,9 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -36,7 +39,9 @@ public class SelectCardService {
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
-            return objectMapper.readValue(result.getBody(), CardDTO.class);
+           CardDTO fundedCard = objectMapper.readValue(result.getBody(), CardDTO.class);
+           fundedCard.setOperationDTOList(fundedCard.getOperationDTOList().stream().sorted(Comparator.comparing(OperationDTO::getTime)).collect(Collectors.toList()));
+           return fundedCard;
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

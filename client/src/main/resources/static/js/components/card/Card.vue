@@ -9,15 +9,15 @@
         </div>
         <div class="card-info-element">
           <h5>User: </h5>
-          <div class="user-card-number">{{ card.owner }}</div>
+          <div class="user-card-owner">{{ card.owner }}</div>
         </div>
         <div class="card-info-element">
           <h5>Balance: </h5>
-          <div class="user-card-number">{{ card.balance }} ₽</div>
+          <div class="user-card-balance">{{ card.balance }} ₽</div>
         </div>
       </div>
     </div>
-    <h2>Операции: </h2>
+    <h2>Operations: </h2>
     <div class="card-operations">
       <b-input-group>
         <b-form-group id="operation-select-type-group">
@@ -39,9 +39,40 @@
       </b-input-group>
     </div>
 
-    <div class="table-of-operations" v-if="operations.length > 0">
-        <b-table bordered hover :items="operations"></b-table>
+    <h2>Balance conditions: </h2>
+
+    <div id="chart" class="chart-section" >
+      <apexchart type="area" height="550"
+                 :options="chartOptions"
+                 :series="series"
+                 v-if="operations.length > 0"
+      ></apexchart>
+      <h4 v-if="operations.length === 0">There no one operation from this card</h4>
     </div>
+
+    <h2>Operations history: </h2>
+
+    <div class="table-of-operations" v-if="operations.length > 0">
+        <b-table bordered hover
+                 :items="operations"
+                 id="operations-table"
+                 :per-page="perPage"
+                 :current-page="currentPage"
+        ></b-table>
+    </div>
+
+    <h4 v-if="operations.length === 0" class="table-of-operations-empty-info">There no one operation from this card</h4>
+
+    <div class="pagination-panel" v-if="operations.length > 0">
+      <b-pagination
+          v-if="operations.length > 10"
+          v-model="currentPage"
+          :total-rows="operations.length"
+          :per-page="perPage"
+          aria-controls="operations-table"
+      ></b-pagination>
+    </div>
+
   </div>
 </template>
 
@@ -66,7 +97,46 @@ export default {
       ],
       valueToOperate: null,
 
-      operations: []
+      operations: [],
+
+      currentPage: 1,
+      perPage: 10,
+
+      balaceValues: [],
+      balanceDateChanges: [],
+
+      series: [{
+        data: []
+      }],
+      chartOptions: {
+        chart: {
+          type: 'area',
+          height: 500,
+          zoom: {
+            enabled: false
+          }
+        },
+        dataLabels: {
+          enabled: false
+        },
+        stroke: {
+          curve: 'straight'
+        },
+        title: {
+          text: 'Balance change',
+          align: 'left'
+        },
+        labels: [],
+        xaxis: {
+          type: 'datetime',
+        },
+        yaxis: {
+          opposite: true
+        },
+        legend: {
+          horizontalAlign: 'left'
+        }
+      },
     }
   },
   computed: {
@@ -140,6 +210,7 @@ export default {
 
             this.operationLocalListUpdate()
             this.fillingTable()
+            this.fillingChart()
           } else {
             this.toastCreation("Please, enter valid data")
           }
@@ -175,6 +246,7 @@ export default {
 
             this.operationLocalListUpdate()
             this.fillingTable()
+            this.fillingChart()
           } else {
             this.toastCreation("Please, enter valid data")
           }
@@ -200,11 +272,78 @@ export default {
         for (let i = 0; i < this.card.operationDTOList.length; i++) {
           this.operations[i] = {
             Number: i,
-            Type: this.card.operationDTOList[i].type,
-            Value: this.card.operationDTOList[i].value,
-            Time: this.card.operationDTOList[i].time,
+            Type: this.card.operationDTOList[this.card.operationDTOList.length-1-i].type,
+            Value: this.card.operationDTOList[this.card.operationDTOList.length-1-i].value,
+            Time: this.card.operationDTOList[this.card.operationDTOList.length-1-i].time.toString().substring(0, 19).replaceAll("T", " "),
           }
         }
+      }
+    },
+
+    fillingChart() {
+      this.series = []
+
+      this.balaceValues = []
+      this.balanceDateChanges = []
+
+      if (this.card.operationDTOList.length > 0){
+        let tempBalance = 0
+        for (let i = 0; i < this.card.operationDTOList.length; i++) {
+          if (this.card.operationDTOList[i].type === 'Withdraw'){
+            tempBalance -=  this.card.operationDTOList[i].value
+          } else {
+            tempBalance +=  this.card.operationDTOList[i].value
+          }
+          this.balaceValues[i] = tempBalance
+          this.balanceDateChanges[i] = this.card.operationDTOList[i].time.toString().substring(0, 19).replaceAll("T", " ")
+        }
+        this.series[0] = {
+          data: this.balaceValues
+        }
+
+        this.chartOptions = this.refreshChartOptions()
+        this.chartOptions.labels = this.balanceDateChanges
+      }
+    },
+
+    refreshChartOptions(){
+      return {
+        chartOptions: {
+          chart: {
+            type: 'area',
+            height: 500,
+            zoom: {
+              enabled: true
+            }
+          },
+          tooltip: {
+            style: {
+              fontSize: '12px',
+              fontFamily: undefined,
+              color: '#000'
+            },
+          },
+          dataLabels: {
+            enabled: false
+          },
+          stroke: {
+            curve: 'straight'
+          },
+          title: {
+            text: 'Balance change',
+            align: 'left'
+          },
+          labels: this.balanceDateChanges,
+          xaxis: {
+            type: 'datetime'
+          },
+          yaxis: {
+            opposite: true
+          },
+          legend: {
+            horizontalAlign: 'left'
+          }
+        },
       }
     }
   },
@@ -229,6 +368,7 @@ export default {
         this.card = card
 
         this.fillingTable()
+        this.fillingChart()
 
         clearInterval(interval)
       }
@@ -299,5 +439,32 @@ export default {
 .card-self-main::-webkit-scrollbar-track:hover {
   border-left: solid 1px #aaa;
   background-color: #eee;
+}
+
+.user-card-number{
+  margin-left: 65px;
+}
+
+.user-card-owner{
+  margin-left: 100px;
+}
+
+.user-card-balance{
+  margin-left: 70px;
+}
+
+.chart-section{
+  padding: 45px;
+  max-width: 90vw;
+}
+
+.table-of-operations-empty-info{
+  margin-top: 35px;
+}
+
+.pagination-panel{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 </style>
