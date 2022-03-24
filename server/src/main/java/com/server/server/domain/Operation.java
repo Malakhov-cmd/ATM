@@ -10,9 +10,7 @@ import java.util.Date;
 @Table(name = "operation")
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
-@ToString
+@Data
 public class Operation {
     @JsonIgnore
     private @Id @GeneratedValue Long id;

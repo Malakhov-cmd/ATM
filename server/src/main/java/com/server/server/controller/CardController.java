@@ -1,6 +1,5 @@
 package com.server.server.controller;
 
-import com.server.server.domain.Card;
 import com.server.server.dto.CardDTO;
 import com.server.server.dto.UserDTO;
 import com.server.server.service.CardService;

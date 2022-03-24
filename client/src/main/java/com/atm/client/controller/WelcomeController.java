@@ -2,6 +2,7 @@ package com.atm.client.controller;
 
 import com.atm.client.dto.UserDTO;
 import com.atm.client.service.user.CreateUserService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -13,12 +14,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping()
+@RequiredArgsConstructor
 @Slf4j
 public class WelcomeController {
     @Value("${spring.profiles.active}")
     private String activeProfile;
 
-    private final CreateUserService createUserService = new CreateUserService();
+    private final CreateUserService createUserService;
 
     @GetMapping("/")
     public String loadTemplate(
