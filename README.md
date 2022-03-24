@@ -1,9 +1,87 @@
 # ATM
-Simulation of bank terminal. There are spring-boot-app with roles of server and client, also frontend side present by vue.
- Построить модель получения клиентом баланса по карте на банкоматом. Классы доменной модели ничего не должны знать о техническом окружении. Подробности технического окружения должны быть скрыты за слоями абстракции.
+___
+**Main info**
 
-В качестве системы сборки должен использоваться Maven. В финальной версии приложение должно представлять из себя 2 Spring Boot приложения. Одно будет выполнять роль клиента\банкомата, а другое роль сервера. Приложение с ролью сервер должно хранить свои данные в базе данных H2. Для взаимодействия приложения должны использовать REST. Модули должны быть покрыты JUnit тестами.
+An application that simulates the operation of a banking terminal
 
-Приложение с ролью сервер должно требовать аутентификации по логину и паролю с использованием Spring Security.
+**Technical task**  
 
-В качестве задания на 5+ приложения должны уметь переключаться на взаимодействие через Apache Kafka.
+>Build a model for a client to receive a balance on a card at an ATM.
+The domain model classes need not know anything about the technical environment. Details
+the technical environment must be hidden behind layers of abstraction.
+>
+>Maven must be used as the build system. In the final version, the application should
+be 2 Spring Boot applications. One will act as a client / ATM,
+and the other is the server role. An application with the server role must store its data in an H2 database.
+Applications must use REST to communicate. Modules must be covered by JUnit tests.
+>
+>An application with a server role must require login and password authentication using Spring Security.
+>
+>As a 5+ challenge, applications should be able to switch to communicating through Apache Kafka.
+
+**About project**
+
+Program components:
++ Server - responsible for database management.
++ Client - responsible for validating and organizing the formation of requests to the server.
++ Frontend - responsible for the graphical presentation and dynamic update of the data presented to the user.
+
+**Data transfer objects**
+
+UserDTO - an instance of an object representing a system user.
+
+```java
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+public class UserDTO {
+    private String username;
+    private String password;
+
+    private Set<CardDTO> cards;
+}
+```
+
+CardDTO - an instance of a bank card object with the appropriate attributes.
+
+```java
+@AllArgsConstructor
+@RequiredArgsConstructor
+@Data
+public class CardDTO {
+    private Long number;
+    private String dateValid;
+    private String owner;
+    private String CVV;
+
+    private Double balance;
+
+    private String username;
+
+    List<OperationDTO> operationDTOList;
+}
+```
+
+OperationDTO - an instance of an object representing an operation is required to generate history and collect statistics for the analysis of expenses and expenses.
+
+```java
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+public class OperationDTO {
+    private Long cardNumber;
+    private String type;
+    private String username;
+    private Double value;
+
+    private Date time;
+}
+```
+
+**Application properties**
+
+Client start on - http://localhost:9000
+
+Server starts on - http://localhost:9090
+
+To enable the frontend side don't forget to run the ``` npm start``` command.
