@@ -20,11 +20,11 @@ public class Card {
     private @Id @GeneratedValue Long id;
 
     private Long number;
-    private String dateValid;
+    private short dateValid;
     private String owner;
-    private String CVV;
+    private short CVV;
 
-    private Double balance;
+    private double balance;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

@@ -1,8 +1,8 @@
 package com.server.server.service;
 
-import com.server.server.domain.User;
 import com.server.server.dto.UserDTO;
 import com.server.server.repo.UserDetailsRepo;
+import com.server.server.service.utils.DataObjectParser;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,21 +15,21 @@ import java.util.Optional;
 public class UserService {
     private UserDetailsRepo userDetailsRepo;
 
-    public void createUser(UserDTO userDTO){
-        Optional<User> findedUser = Optional
-                .ofNullable(userDetailsRepo.findByUserName(
-                        userDTO.getUsername()));
+    private DataObjectParser dataObjectParser;
 
-        if (findedUser.isEmpty()) {
+    public void createUser(UserDTO userDTO){
+        if (!isAlreadyRegistered(userDTO)) {
             log.info("User with  this credential not found!");
 
-            User newUser = new User();
-            newUser.setUserName(userDTO.getUsername());
-            newUser.setPassword(userDTO.getPassword());
-
-            userDetailsRepo.save(newUser);
+            userDetailsRepo.save(dataObjectParser.userDTOtoUserDAO(userDTO));
 
             log.info("Successfully create new user.");
         }
+    }
+
+    private boolean isAlreadyRegistered(UserDTO userDTO) {
+        return Optional
+                .ofNullable(userDetailsRepo.findByUserName(userDTO.getUsername()))
+                .isPresent();
     }
 }

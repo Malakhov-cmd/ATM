@@ -15,10 +15,10 @@ public class Operation {
     @JsonIgnore
     private @Id @GeneratedValue Long id;
 
-    private Long cardNumber;
+    private long cardNumber;
     private String type;
     private String username;
-    private Double value;
+    private double value;
 
     private Date time;
 

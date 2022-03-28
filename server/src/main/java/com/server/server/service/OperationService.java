@@ -5,6 +5,7 @@ import com.server.server.domain.Operation;
 import com.server.server.dto.OperationDTO;
 import com.server.server.repo.CardRepo;
 import com.server.server.repo.OperationRepo;
+import com.server.server.service.utils.DataObjectParser;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,8 @@ public class OperationService {
     private OperationRepo operationRepo;
     private CardRepo cardRepo;
 
+    private DataObjectParser dataObjectParser;
+
     public void createOperation (OperationDTO operationDTO) {
         Card card = cardRepo.findByNumber(operationDTO.getCardNumber());
         Operation newOperation = fillingOperation(operationDTO, card);
@@ -28,13 +31,7 @@ public class OperationService {
     }
 
     private Operation fillingOperation(OperationDTO operationDTO, Card card) {
-        Operation newOperation = new Operation();
-
-        newOperation.setCardNumber(operationDTO.getCardNumber());
-        newOperation.setType(operationDTO.getType());
-        newOperation.setUsername(operationDTO.getUsername());
-        newOperation.setValue(operationDTO.getValue());
-        newOperation.setTime(operationDTO.getTime());
+        Operation newOperation = dataObjectParser.cardOperationDTOtoCardOperationDAO(operationDTO);
 
         newOperation.setCard(card);
         return newOperation;

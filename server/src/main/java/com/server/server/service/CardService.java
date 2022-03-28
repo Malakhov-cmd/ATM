@@ -7,6 +7,7 @@ import com.server.server.dto.OperationDTO;
 import com.server.server.dto.UserDTO;
 import com.server.server.repo.CardRepo;
 import com.server.server.repo.UserDetailsRepo;
+import com.server.server.service.utils.DataObjectParser;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,8 @@ import java.util.stream.Collectors;
 public class CardService {
     private CardRepo cardRepo;
     private UserDetailsRepo userDetailsRepo;
+
+    private DataObjectParser dataObjectParser;
 
     public void createCard(CardDTO cardDTO) {
         Optional<Card> findedCard = Optional
@@ -44,13 +47,7 @@ public class CardService {
     }
 
     private Card fillingNewCardData(CardDTO cardDTO, User owner) {
-        Card newCard = new Card();
-
-        newCard.setNumber(cardDTO.getNumber());
-        newCard.setDateValid(cardDTO.getDateValid());
-        newCard.setOwner(cardDTO.getOwner());
-        newCard.setCVV(cardDTO.getCVV());
-        newCard.setBalance(0.0);
+        Card newCard = dataObjectParser.cardDTOtoCardDAO(cardDTO);
 
         newCard.setUser(owner);
         newCard.setOperations(new ArrayList<>());
@@ -73,28 +70,18 @@ public class CardService {
                 .getCards()
                 .stream()
                 .sorted(Comparator.comparing(Card::getId).reversed())
-                .map((card -> new CardDTO(card.getNumber(), card.getDateValid(), card.getOwner(), card.getCVV(), card.getBalance(), card.getUser().getUserName(),
-                        card.getOperations()
-                                .stream()
-                                .map(operation -> new OperationDTO(operation.getCardNumber(), operation.getType(), operation.getUsername(), operation.getValue(), operation.getTime()))
-                                .collect(Collectors.toList()))))
+                .map(dataObjectParser::cardDAOtoCardDTO)
                 .collect(Collectors.toSet());
     }
 
     public CardDTO getUserCard(String username, String cardNumber) {
-        Card card = userDetailsRepo
+        Optional<Card> card = userDetailsRepo
                 .findByUserName(username)
                 .getCards()
                 .stream()
                 .filter((cardItem) -> cardItem.getNumber().equals(Long.valueOf(cardNumber)))
-                .findFirst()
-                .orElse(new Card());
+                .findFirst();
 
-        return new CardDTO(card.getNumber(), card.getDateValid(), card.getOwner(),
-                card.getCVV(), card.getBalance(), card.getUser().getUserName(),
-                card.getOperations()
-                        .stream()
-                        .map(operation -> new OperationDTO(operation.getCardNumber(), operation.getType(), operation.getUsername(), operation.getValue(), operation.getTime()))
-                        .collect(Collectors.toList()));
+        return card.isPresent() ? dataObjectParser.cardDAOtoCardDTO(card.get()) : new CardDTO();
     }
 }

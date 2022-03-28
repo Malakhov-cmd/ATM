@@ -137,8 +137,6 @@ export default {
         location.href = "/#/home"
       }
     }
-
-    this.toastCreation("Welcome! Chose way to authorize")
   }
 }
 </script>

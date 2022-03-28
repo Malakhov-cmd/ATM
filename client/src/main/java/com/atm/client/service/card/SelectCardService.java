@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SelectCardService {
 
-    public List<CardDTO> getCards(String username){
+    public List<CardDTO> getCards(String username) {
         ResponseEntity<String> result = sendRequestToFindAllUserCards(username);
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -33,15 +33,19 @@ public class SelectCardService {
         return new ArrayList<>();
     }
 
-    public CardDTO getCard(String username, String cardNumber){
+    public CardDTO getCard(String username, String cardNumber) {
         ResponseEntity<String> result = sendRequestToFindUserCard(username, cardNumber);
 
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
-           CardDTO fundedCard = objectMapper.readValue(result.getBody(), CardDTO.class);
-           fundedCard.setOperationDTOList(fundedCard.getOperationDTOList().stream().sorted(Comparator.comparing(OperationDTO::getTime)).collect(Collectors.toList()));
-           return fundedCard;
+            CardDTO fundedCard = objectMapper.readValue(result.getBody(), CardDTO.class);
+            fundedCard.setOperationDTOList(fundedCard
+                    .getOperationDTOList()
+                    .stream()
+                    .sorted(Comparator.comparing(OperationDTO::getTime))
+                    .collect(Collectors.toList()));
+            return fundedCard;
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

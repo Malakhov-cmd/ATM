@@ -455,7 +455,6 @@ export default {
 
 .chart-section{
   padding: 45px;
-  max-width: 90vw;
 }
 
 .table-of-operations-empty-info{

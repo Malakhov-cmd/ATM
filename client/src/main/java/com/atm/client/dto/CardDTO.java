@@ -10,12 +10,12 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class CardDTO {
-    private Long number;
-    private String dateValid;
+    private long number;
+    private short dateValid;
     private String owner;
-    private String CVV;
+    private short CVV;
 
-    private Double balance;
+    private double balance;
 
     private String username;
 

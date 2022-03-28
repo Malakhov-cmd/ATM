@@ -4,8 +4,8 @@
       <div>
         <h3 class="float-md-start mb-0">ATM</h3>
         <h5 class="float-md-start mb-0 user-name">{{ name }}</h5>
-        <nav class="nav nav-masthead justify-content-center float-md-end">
-          <a class="nav-link" href="#">logout</a>
+        <nav class="nav nav-masthead justify-content-center float-md-end" v-on:click="">
+          <a class="nav-link" v-on:click="logout">logout</a>
         </nav>
       </div>
     </header>
@@ -152,7 +152,7 @@
               </div>
               <div class="user-card-element">
                 <h5>Data valid: </h5>
-                <div class="user-card-date-valid">{{ value.dateValid }}</div>
+                <div class="user-card-date-valid">{{ dateToStringValue(value.dateValid) }}</div>
               </div>
               <div class="user-card-element">
                 <h5>Owner name: </h5>
@@ -252,7 +252,15 @@ export default {
       })
     },
 
-    cleanInputsFienls() {
+    dateToStringValue(value) {
+      if (value.toString().length === 3) {
+          return "0" + value.toString().substring(0,1) + " / " + value.toString().substring(1, value.toString().length)
+      } else {
+        return value.toString().substring(0,2) + " / " + value.toString().substring(2, value.toString().length)
+      }
+    },
+
+    cleanInputsFields() {
       this.card.number.first = ''
       this.card.number.second = ''
       this.card.number.third = ''
@@ -292,7 +300,7 @@ export default {
 
               this.saveNewCardToLocalData()
 
-              this.cleanInputsFienls()
+              this.cleanInputsFields()
             }
 
             clearInterval(interval)
@@ -313,11 +321,19 @@ export default {
         owner: this.addedCard.owner,
         username: this.addedCard.username
       }
+    },
+
+    logout() {
+      axios.post('/logout')
+          .then(function (response) {
+            window.location = "/"
+          })
+          .catch(function (error) {
+            console.log(error)
+          })
     }
   },
   mounted() {
-    this.toastCreation("You are successfully authorized")
-
     axios.get('/card/get/all', {
       params: {
         username: frontendData.username

@@ -21,9 +21,9 @@ public class CardController {
     @PostMapping("/add")
     public CardDTO createCard(
             @RequestParam Long number,
-            @RequestParam String dateValid,
+            @RequestParam Integer dateValid,
             @RequestParam String owner,
-            @RequestParam String CVV,
+            @RequestParam Integer CVV,
             @RequestParam String username
     ) {
         log.info("Request of card create registered." +

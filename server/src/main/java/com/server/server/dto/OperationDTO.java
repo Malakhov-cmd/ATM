@@ -10,10 +10,10 @@ import java.util.Date;
 @NoArgsConstructor
 @Data
 public class OperationDTO {
-    private Long cardNumber;
+    private long cardNumber;
     private String type;
     private String username;
-    private Double value;
+    private double value;
 
     private Date time;
 }
