@@ -14,7 +14,7 @@ public class OperationController {
     private OperationService operationService;
 
     @PostMapping("/create")
-    public void createNewOperation(
+    public boolean createNewOperation(
             @RequestBody OperationDTO operationDTO
     ) {
         log.info("Request of withdraw." +
@@ -25,6 +25,6 @@ public class OperationController {
                 " value: " + operationDTO.getValue() +
                 " date: " + operationDTO.getTime());
 
-        operationService.createOperation(operationDTO);
+        return operationService.createOperation(operationDTO);
     }
 }

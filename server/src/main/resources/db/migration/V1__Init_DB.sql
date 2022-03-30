@@ -31,6 +31,6 @@ create table usr
 );
 
 alter table if exists card
-    add constraint Card_To_User_FK foreign key (user_id) references usr;
+    add constraint Card_To_User_FK foreign key (user_id) references usr on delete cascade;
 alter table if exists operation
-    add constraint Operation_To_Card_FK foreign key (card_id) references card
+    add constraint Operation_To_Card_FK foreign key (card_id) references card on delete cascade

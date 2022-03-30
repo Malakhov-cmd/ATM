@@ -29,8 +29,7 @@ public class CardService {
 
     public void createCard(CardDTO cardDTO) {
         Optional<Card> findedCard = Optional
-                .ofNullable(cardRepo.findByNumber(
-                        cardDTO.getNumber()));
+                .ofNullable(cardRepo.findByNumber(cardDTO.getNumber()));
 
         if (findedCard.isEmpty()) {
             log.info("Card not found! Start process of creation");
@@ -47,12 +46,9 @@ public class CardService {
     }
 
     private Card fillingNewCardData(CardDTO cardDTO, User owner) {
-        Card newCard = dataObjectParser.cardDTOtoCardDAO(cardDTO);
-
-        newCard.setUser(owner);
-        newCard.setOperations(new ArrayList<>());
-
-        return newCard;
+        return dataObjectParser.cardDTOtoCardDAO(cardDTO)
+                .setUser(owner)
+                .setOperations(new ArrayList<>());
     }
 
     private User insertNewCardToUser(Card newCard, User owner) {

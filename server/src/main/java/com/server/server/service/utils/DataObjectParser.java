@@ -15,15 +15,12 @@ import java.util.stream.Collectors;
 @Slf4j
 public class DataObjectParser {
     public Card cardDTOtoCardDAO(CardDTO cardDTO) {
-        Card newCard = new Card();
-
-        newCard.setNumber(cardDTO.getNumber());
-        newCard.setDateValid(cardDTO.getDateValid());
-        newCard.setOwner(cardDTO.getOwner());
-        newCard.setCVV(cardDTO.getCVV());
-        newCard.setBalance(cardDTO.getBalance());
-
-        return newCard;
+        return new Card()
+                .setNumber(cardDTO.getNumber())
+                .setDateValid(cardDTO.getDateValid())
+                .setOwner(cardDTO.getOwner())
+                .setCVV(cardDTO.getCVV())
+                .setBalance(cardDTO.getBalance());
     }
 
     public CardDTO cardDAOtoCardDTO(Card card) {
@@ -35,22 +32,17 @@ public class DataObjectParser {
     }
 
     public Operation cardOperationDTOtoCardOperationDAO(OperationDTO operationDTO) {
-        Operation newOperation = new Operation();
-
-        newOperation.setCardNumber(operationDTO.getCardNumber());
-        newOperation.setType(operationDTO.getType());
-        newOperation.setUsername(operationDTO.getUsername());
-        newOperation.setValue(operationDTO.getValue());
-        newOperation.setTime(operationDTO.getTime());
-
-        return newOperation;
+        return new Operation()
+                .setCardNumber(operationDTO.getCardNumber())
+                .setType(operationDTO.getType())
+                .setUsername(operationDTO.getUsername())
+                .setValue(operationDTO.getValue())
+                .setTime(operationDTO.getTime());
     }
 
     public User userDTOtoUserDAO(UserDTO userDTO) {
-        User newUser = new User();
-        newUser.setUserName(userDTO.getUsername());
-        newUser.setPassword(userDTO.getPassword());
-
-        return newUser;
+        return new User()
+                .setUserName(userDTO.getUsername())
+                .setPassword(userDTO.getPassword());
     }
 }

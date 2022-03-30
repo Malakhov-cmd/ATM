@@ -37,6 +37,13 @@ public class CreateUserService {
     }
 
     public Optional<UserDTO> sendUserCreationRequestToServer(UserDTO userDTO) {
-        return userDTOSender.sendCreationEntityRequestToServer(userDTO, "http://localhost:9090/user/registration", HttpMethod.POST);
+         return isValidUserDTO(userDTO)?
+                 userDTOSender.sendCreationEntityRequestToServer(userDTO, "http://localhost:9090/user/registration", HttpMethod.POST) :
+                 Optional.empty();
+    }
+
+    private boolean isValidUserDTO(UserDTO userDTO) {
+        return userDTO.getUsername() != null && userDTO.getUsername().length() > 0 && userDTO.getUsername().length() < 128
+                && userDTO.getPassword() != null && userDTO.getPassword().length() > 0 && userDTO.getPassword().length() < 128;
     }
 }

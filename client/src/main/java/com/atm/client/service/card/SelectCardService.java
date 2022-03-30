@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,6 +21,12 @@ import java.util.stream.Collectors;
 public class SelectCardService {
 
     public List<CardDTO> getCards(String username) {
+        return isValidUsername(username) ?
+                getAllUserCards(username) :
+                new ArrayList<>();
+    }
+
+    private List<CardDTO> getAllUserCards(String username) {
         ResponseEntity<String> result = sendRequestToFindAllUserCards(username);
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -29,11 +36,16 @@ public class SelectCardService {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-
         return new ArrayList<>();
     }
 
     public CardDTO getCard(String username, String cardNumber) {
+        return isValidUsernameAndCardNumber(username, cardNumber) ?
+                getUserCard(username, cardNumber) :
+                new CardDTO();
+    }
+
+    private CardDTO getUserCard(String username, String cardNumber) {
         ResponseEntity<String> result = sendRequestToFindUserCard(username, cardNumber);
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -65,5 +77,17 @@ public class SelectCardService {
 
         RestTemplate restTemplate = new RestTemplate();
         return restTemplate.getForEntity(uri, String.class);
+    }
+
+    private boolean isValidUsername(String username) {
+        return username != null && username.length() > 0 && username.length() < 128;
+    }
+
+    private boolean isValidUsernameAndCardNumber(String username, String cardNumber) {
+        Pattern cardNumberPattern = Pattern.compile("(([2-6]([0-9]{3})?)(([0-9]{4}?){3}))");
+
+        return username != null && username.length() > 0 && username.length() < 128 &&
+                cardNumber != null && cardNumber.length() > 0 &&
+                cardNumberPattern.matcher(cardNumber).matches();
     }
 }

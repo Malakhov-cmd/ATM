@@ -21,34 +21,40 @@ public class OperationService {
 
     private DataObjectParser dataObjectParser;
 
-    public void createOperation (OperationDTO operationDTO) {
+    public boolean createOperation(OperationDTO operationDTO) {
         Card card = cardRepo.findByNumber(operationDTO.getCardNumber());
         Operation newOperation = fillingOperation(operationDTO, card);
 
-        operationRepo.save(newOperation);
-
-        addNewOperationToCardAndCorrectBalance(card, newOperation);
+        return addNewOperationToCardAndCorrectBalance(card, newOperation);
     }
 
     private Operation fillingOperation(OperationDTO operationDTO, Card card) {
-        Operation newOperation = dataObjectParser.cardOperationDTOtoCardOperationDAO(operationDTO);
-
-        newOperation.setCard(card);
-        return newOperation;
+        return dataObjectParser.cardOperationDTOtoCardOperationDAO(operationDTO).setCard(card);
     }
 
-    private void addNewOperationToCardAndCorrectBalance(Card card, Operation newOperation) {
+    private boolean addNewOperationToCardAndCorrectBalance(Card card, Operation newOperation) {
         List<Operation> operationList = card.getOperations();
         operationList.add(newOperation);
 
         card.setOperations(operationList);
 
         if (newOperation.getType().equals("Withdraw")) {
-            card.setBalance(card.getBalance() - newOperation.getValue());
+            if (card.getBalance() > newOperation.getValue()) {
+                card.setBalance(card.getBalance() - newOperation.getValue());
+
+                savingValues(card, newOperation);
+                return true;
+            }
         } else {
             card.setBalance(card.getBalance() + newOperation.getValue());
+            savingValues(card, newOperation);
+            return true;
         }
+        return false;
+    }
 
+    private void savingValues(Card card, Operation newOperation) {
+        operationRepo.save(newOperation);
         cardRepo.save(card);
     }
 }
