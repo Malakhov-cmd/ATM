@@ -2,30 +2,24 @@ package com.atm.client.service.card;
 
 import com.atm.client.dto.CardDTO;
 import com.atm.client.service.sender.Sender;
+import com.atm.client.service.validation.ValidatorService;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Optional;
-import java.util.regex.Pattern;
 
 @Service
+@AllArgsConstructor
 @Slf4j
 public class CreateCardService {
     private Sender<CardDTO> cardDTOSender;
-
-    Pattern cardNumberPattern = Pattern.compile("(([2-6]([0-9]{3})?)(([0-9]{4}?){3}))");
-    Pattern cardDatePattern = Pattern.compile("(0[1-9]|1[0-2])([0-9]{2})");
-    Pattern cardCVVPattern = Pattern.compile("[0-9]{3}");
-    Pattern ownerPattern = Pattern.compile("(([A-Z]+)\\s([A-Z]+))");
-
-    public CreateCardService(Sender<CardDTO> cardDTOSender) {
-        this.cardDTOSender = cardDTOSender;
-    }
+    private ValidatorService validatorService;
 
     public Optional<CardDTO> createCard(Long number, Integer dateValid, String owner, Integer CVV, String username) {
-        if (validateCardData(number, dateValid, owner, CVV)) {
+        if (validatorService.validateCardData(number, dateValid, owner, CVV)) {
             CardDTO cardDTO = new CardDTO(number, dateValid.shortValue(), owner, CVV.shortValue(), 0.0, username, new ArrayList<>());
 
             return cardDTOSender.sendCreationEntityRequestToServer(cardDTO, "http://localhost:9090/card/create", HttpMethod.POST);
@@ -34,14 +28,4 @@ public class CreateCardService {
         log.error("Validation is failed! Card has incorrect data.");
         return Optional.empty();
     }
-
-    private boolean validateCardData(Long number, Integer dateValid, String owner, Integer CVV) {
-        if (number != null && dateValid != null && owner != null && CVV != null && owner.length() < 128)
-            return cardNumberPattern.matcher(number.toString()).matches()
-                    && cardDatePattern.matcher(dateValid.toString().length() == 3 ? "0" + dateValid : dateValid.toString()).matches()
-                    && cardCVVPattern.matcher(CVV.toString()).matches()
-                    && ownerPattern.matcher(owner.toUpperCase()).matches();
-        return false;
-    }
-
 }

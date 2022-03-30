@@ -15,7 +15,7 @@
 
     <properties>
         <java.version>11</java.version>
-        <spring.boot.autoconfigure.version>2.6.3</spring.boot.autoconfigure.version>
+        <spring.boot.oauth2.autoconfigure.version>2.6.3</spring.boot.oauth2.autoconfigure.version>
     </properties>
 
     <dependencies>
@@ -37,7 +37,7 @@
         <dependency>
             <groupId>org.springframework.security.oauth.boot</groupId>
             <artifactId>spring-security-oauth2-autoconfigure</artifactId>
-            <version>${spring.boot.autoconfigure.version}</version>
+            <version>${spring.boot.oauth2.autoconfigure.version}</version>
         </dependency>
 
         <dependency>

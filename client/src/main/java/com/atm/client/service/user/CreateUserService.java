@@ -2,6 +2,7 @@ package com.atm.client.service.user;
 
 import com.atm.client.dto.UserDTO;
 import com.atm.client.service.sender.Sender;
+import com.atm.client.service.validation.ValidatorService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
@@ -15,6 +16,7 @@ import java.util.Optional;
 @Slf4j
 public class CreateUserService {
     private Sender<UserDTO> userDTOSender;
+    private ValidatorService validatorService;
 
     public Optional<UserDTO> createUserFromOauthData(
             OAuth2User principal
@@ -37,13 +39,8 @@ public class CreateUserService {
     }
 
     public Optional<UserDTO> sendUserCreationRequestToServer(UserDTO userDTO) {
-         return isValidUserDTO(userDTO)?
+         return validatorService.isValidUserDTO(userDTO)?
                  userDTOSender.sendCreationEntityRequestToServer(userDTO, "http://localhost:9090/user/registration", HttpMethod.POST) :
                  Optional.empty();
-    }
-
-    private boolean isValidUserDTO(UserDTO userDTO) {
-        return userDTO.getUsername() != null && userDTO.getUsername().length() > 0 && userDTO.getUsername().length() < 128
-                && userDTO.getPassword() != null && userDTO.getPassword().length() > 0 && userDTO.getPassword().length() < 128;
     }
 }

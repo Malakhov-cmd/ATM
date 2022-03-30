@@ -2,8 +2,10 @@ package com.atm.client.service.card;
 
 import com.atm.client.dto.CardDTO;
 import com.atm.client.dto.OperationDTO;
+import com.atm.client.service.validation.ValidatorService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -17,11 +19,13 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 @Slf4j
 public class SelectCardService {
+    private ValidatorService validatorService;
 
     public List<CardDTO> getCards(String username) {
-        return isValidUsername(username) ?
+        return validatorService.isValidUsername(username) ?
                 getAllUserCards(username) :
                 new ArrayList<>();
     }
@@ -40,7 +44,7 @@ public class SelectCardService {
     }
 
     public CardDTO getCard(String username, String cardNumber) {
-        return isValidUsernameAndCardNumber(username, cardNumber) ?
+        return validatorService.isValidUsernameAndCardNumber(username, cardNumber) ?
                 getUserCard(username, cardNumber) :
                 new CardDTO();
     }
@@ -77,17 +81,5 @@ public class SelectCardService {
 
         RestTemplate restTemplate = new RestTemplate();
         return restTemplate.getForEntity(uri, String.class);
-    }
-
-    private boolean isValidUsername(String username) {
-        return username != null && username.length() > 0 && username.length() < 128;
-    }
-
-    private boolean isValidUsernameAndCardNumber(String username, String cardNumber) {
-        Pattern cardNumberPattern = Pattern.compile("(([2-6]([0-9]{3})?)(([0-9]{4}?){3}))");
-
-        return username != null && username.length() > 0 && username.length() < 128 &&
-                cardNumber != null && cardNumber.length() > 0 &&
-                cardNumberPattern.matcher(cardNumber).matches();
     }
 }
