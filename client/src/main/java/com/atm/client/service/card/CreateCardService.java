@@ -25,7 +25,7 @@ public class CreateCardService {
             return cardDTOSender.sendCreationEntityRequestToServer(cardDTO, "http://localhost:9090/card/create", HttpMethod.POST);
         }
 
-        log.error("Validation is failed! Card has incorrect data.");
+        log.error("Validation is failed! Card has incorrect data. {}", cardDTOSender);
         return Optional.empty();
     }
 }

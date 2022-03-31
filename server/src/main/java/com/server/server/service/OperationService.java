@@ -10,8 +10,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 @AllArgsConstructor
 @Slf4j
@@ -21,7 +19,7 @@ public class OperationService {
 
     private DataObjectParser dataObjectParser;
 
-    public boolean createOperation(OperationDTO operationDTO) {
+    public synchronized boolean createOperation(OperationDTO operationDTO) {
         Card card = cardRepo.findByNumber(operationDTO.getCardNumber());
         Operation newOperation = dataObjectParser.cardOperationDTOtoCardOperationDAO(operationDTO).setCard(card);
 
@@ -29,10 +27,7 @@ public class OperationService {
     }
 
     private boolean addNewOperationToCardAndCorrectBalance(Card card, Operation newOperation) {
-        List<Operation> operationList = card.getOperations();
-        operationList.add(newOperation);
-
-        card.setOperations(operationList);
+        card.getOperations().add(newOperation);
 
         if (newOperation.getType().equals("Withdraw")) {
             if (card.getBalance() > newOperation.getValue()) {

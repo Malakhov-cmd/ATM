@@ -17,7 +17,7 @@ public class UserService {
 
     private DataObjectParser dataObjectParser;
 
-    public void createUser(UserDTO userDTO){
+    public synchronized void createUser(UserDTO userDTO){
         if (!isAlreadyRegistered(userDTO)) {
             log.info("User with  this credential not found!");
 

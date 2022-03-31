@@ -4,6 +4,7 @@ import com.atm.client.dto.UserDTO;
 import com.atm.client.service.user.CreateUserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class LoginController {
     private CreateUserService createUserDTOService;
+
+    private PasswordEncoder passwordEncoder;
 
     @PostMapping("/default")
     public UserDTO addUserByDefaultAuth(
@@ -28,7 +31,7 @@ public class LoginController {
                 " user password " + newUser.getPassword());
 
        return createUserDTOService
-               .sendUserCreationRequestToServer(new UserDTO(username, password, null))
+               .sendUserCreationRequestToServer(new UserDTO(username, passwordEncoder.encode(password), null))
                .orElse(new UserDTO());
     }
 }

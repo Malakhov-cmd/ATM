@@ -6,6 +6,7 @@ import com.atm.client.service.validation.ValidatorService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,8 @@ public class CreateUserService {
     private Sender<UserDTO> userDTOSender;
     private ValidatorService validatorService;
 
+    private PasswordEncoder passwordEncoder;
+
     public Optional<UserDTO> createUserFromOauthData(
             OAuth2User principal
     ) {
@@ -26,8 +29,7 @@ public class CreateUserService {
 
         log.info("Parsed values from oauth - username: " + login + " password: " + password);
 
-        UserDTO userDTO = new UserDTO(login, password, null);
-
+        UserDTO userDTO = new UserDTO(login, passwordEncoder.encode(password), null);
         return sendUserCreationRequestToServer(userDTO);
     }
 
@@ -39,8 +41,8 @@ public class CreateUserService {
     }
 
     public Optional<UserDTO> sendUserCreationRequestToServer(UserDTO userDTO) {
-         return validatorService.isValidUserDTO(userDTO)?
-                 userDTOSender.sendCreationEntityRequestToServer(userDTO, "http://localhost:9090/user/registration", HttpMethod.POST) :
-                 Optional.empty();
+        return validatorService.isValidUserDTO(userDTO) ?
+                userDTOSender.sendCreationEntityRequestToServer(userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword())), "http://localhost:9090/user/registration", HttpMethod.POST) :
+                Optional.empty();
     }
 }

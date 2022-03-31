@@ -3,7 +3,6 @@ package com.server.server.service;
 import com.server.server.domain.Card;
 import com.server.server.domain.User;
 import com.server.server.dto.CardDTO;
-import com.server.server.dto.OperationDTO;
 import com.server.server.dto.UserDTO;
 import com.server.server.repo.CardRepo;
 import com.server.server.repo.UserDetailsRepo;
@@ -27,20 +26,21 @@ public class CardService {
 
     private DataObjectParser dataObjectParser;
 
-    public void createCard(CardDTO cardDTO) {
+    public synchronized void createCard(CardDTO cardDTO) {
         Optional<Card> foundCard = Optional
                 .ofNullable(cardRepo.findByNumber(cardDTO.getNumber()));
 
         if (foundCard.isEmpty()) {
             log.info("Card not found! Start process of creation");
 
-            User owner = userDetailsRepo
-                    .findByUserName(cardDTO.getUsername());
+            User owner = userDetailsRepo.findByUserName(cardDTO.getUsername());
 
             Card newCard = fillingNewCardData(cardDTO, owner);
             cardRepo.save(newCard);
 
-            userDetailsRepo.save(insertNewCardToUser(newCard, owner));
+            owner.getCards().add(newCard);
+
+            userDetailsRepo.save(owner);
             log.info("Card successfully created");
         }
     }
@@ -49,15 +49,6 @@ public class CardService {
         return dataObjectParser.cardDTOtoCardDAO(cardDTO)
                 .setUser(owner)
                 .setOperations(new ArrayList<>());
-    }
-
-    private User insertNewCardToUser(Card newCard, User owner) {
-        Set<Card> userCards = owner.getCards();
-        userCards.add(newCard);
-
-        owner.setCards(userCards);
-
-        return owner;
     }
 
     public Set<CardDTO> getUserCards(UserDTO userDTO) {
