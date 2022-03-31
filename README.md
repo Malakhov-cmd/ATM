@@ -135,6 +135,6 @@ To see graphical reports on the results of the tests performed, open ```teminal 
 
 Example of tets results:
 
-![img of test result](client\src\main\resources\static\img\report\Report.png)
+![img of test result](https://i.ibb.co/WWqy4B0/Report.png)
 
 To enable the frontend side don't forget to run the ``` npm start``` command.
