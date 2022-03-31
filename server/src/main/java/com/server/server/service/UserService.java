@@ -22,7 +22,6 @@ public class UserService {
             log.info("User with  this credential not found!");
 
             userDetailsRepo.save(dataObjectParser.userDTOtoUserDAO(userDTO));
-
             log.info("Successfully create new user.");
         }
     }

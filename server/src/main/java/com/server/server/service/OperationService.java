@@ -23,13 +23,9 @@ public class OperationService {
 
     public boolean createOperation(OperationDTO operationDTO) {
         Card card = cardRepo.findByNumber(operationDTO.getCardNumber());
-        Operation newOperation = fillingOperation(operationDTO, card);
+        Operation newOperation = dataObjectParser.cardOperationDTOtoCardOperationDAO(operationDTO).setCard(card);
 
         return addNewOperationToCardAndCorrectBalance(card, newOperation);
-    }
-
-    private Operation fillingOperation(OperationDTO operationDTO, Card card) {
-        return dataObjectParser.cardOperationDTOtoCardOperationDAO(operationDTO).setCard(card);
     }
 
     private boolean addNewOperationToCardAndCorrectBalance(Card card, Operation newOperation) {

@@ -21,7 +21,7 @@ public class User {
     private String userName;
     private String password;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     @ToString.Exclude
     private Set<Card> cards;
 

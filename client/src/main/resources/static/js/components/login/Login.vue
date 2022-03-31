@@ -1,49 +1,29 @@
 <template>
   <div class="main-login">
-    <p class="login-label">Login</p>
+    <div class="main-login-functional-section">
+      <p class="login-label">Login in ATM</p>
 
-    <b-form-group
-        description="Let us know your name."
-        :invalid-feedback="invalidFeedback"
-        class="login-inputs"
-    >
-      <b-row class="input-row-username">
-        <b-col sm="3">
-          <label for="input-name">Name:</label>
-        </b-col>
-        <b-col sm="9">
-          <b-form-input id="input-name" v-model="usernameInputed" :state="checkUsernameCorrect" trim></b-form-input>
-        </b-col>
-      </b-row>
-
-      <b-row class="input-row-password">
-        <b-col sm="3">
-          <label for="input-password">Password:</label>
-        </b-col>
-        <b-col sm="9">
-          <b-form-input type="password" id="input-password" v-model="passwordInputed" :state="checkUserPasswordCorrect"
-                        trim></b-form-input>
-        </b-col>
-      </b-row>
-    </b-form-group>
-
-    <div class="social-auth-btns">
-      <p>Login via social</p>
-      <b-btn class="google-oath-btn social-auth-btn"
-             v-on:click="googleOauth">
-        <b-icon-google font-scale="2"></b-icon-google>
-      </b-btn>
-      <b-btn class="google-oath-btn social-auth-btn"
-             v-on:click="githubOauth">
-        <b-icon-github font-scale="2"></b-icon-github>
-      </b-btn>
+      <div class="social-auth-btns">
+        <p>Login via social</p>
+        <b-btn class="google-oath-btn social-auth-btn"
+               v-on:click="googleOauth">
+          <b-icon-google font-scale="2"></b-icon-google>
+        </b-btn>
+        <b-btn class="google-oath-btn social-auth-btn"
+               v-on:click="githubOauth">
+          <b-icon-github font-scale="2"></b-icon-github>
+        </b-btn>
+      </div>
     </div>
 
-    <div class="submit-btn">
-      <b-button variant="outline-success" v-on:click="defaultAuth">
-        Submit
-      </b-button>
-    </div>
+    <footer class="mt-auto text-white-50 login-footer">
+      <p>App created by
+        <a href="https://github.com/Malakhov-cmd" class="text-white">
+          @Malakhov-cmd
+        </a>
+        .
+      </p>
+    </footer>
   </div>
 </template>
 
@@ -98,9 +78,9 @@ export default {
         axios.post('/login/default?username=' + this.usernameInputed
             + '&password=' + this.passwordInputed)
             .then(function (response) {
-                isSentAndReceived = true
+              isSentAndReceived = true
 
-                window.frontendData = response.data
+              window.frontendData = response.data
             })
             .catch(function (error) {
               console.log(error);
@@ -148,8 +128,16 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: space-around;
+  min-height: 100vh;
 }
 
+.main-login-functional-section{
+  margin-top: 35vh;
+}
+
+.login-footer{
+  margin-bottom: 45px;
+}
 .login-inputs {
   min-width: 20vw;
 }
@@ -176,7 +164,7 @@ export default {
   margin-bottom: 17px;
 }
 
-.toasted-container{
+.toasted-container {
   position: absolute;
 }
 </style>

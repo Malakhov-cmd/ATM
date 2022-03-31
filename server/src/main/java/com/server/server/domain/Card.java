@@ -30,7 +30,7 @@ public class Card {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "card")
+    @OneToMany(mappedBy = "card", fetch = FetchType.EAGER)
     @ToString.Exclude
     @JsonIgnore
     private List<Operation> operations;

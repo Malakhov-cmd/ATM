@@ -28,10 +28,10 @@ public class CardService {
     private DataObjectParser dataObjectParser;
 
     public void createCard(CardDTO cardDTO) {
-        Optional<Card> findedCard = Optional
+        Optional<Card> foundCard = Optional
                 .ofNullable(cardRepo.findByNumber(cardDTO.getNumber()));
 
-        if (findedCard.isEmpty()) {
+        if (foundCard.isEmpty()) {
             log.info("Card not found! Start process of creation");
 
             User owner = userDetailsRepo

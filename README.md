@@ -133,6 +133,8 @@ You can easily manage these modes by entering in ```ServerApplication -> Edit co
 
 To see graphical reports on the results of the tests performed, open ```teminal ``` and enter the command ``` allure serve ```.
 
-![img of test result]()
+Example of tets results:
+
+![img of test result](client\src\main\resources\static\img\report\Report.png)
 
 To enable the frontend side don't forget to run the ``` npm start``` command.
