@@ -3,6 +3,7 @@ package com.atm.client.service.user;
 import com.atm.client.dto.UserDTO;
 import com.atm.client.service.sender.Sender;
 import com.atm.client.service.validation.ValidatorService;
+import com.atm.client.util.Links;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
@@ -42,7 +43,7 @@ public class CreateUserService {
 
     public Optional<UserDTO> sendUserCreationRequestToServer(UserDTO userDTO) {
         return validatorService.isValidUserDTO(userDTO) ?
-                userDTOSender.sendCreationEntityRequestToServer(userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword())), "http://localhost:9090/user/registration", HttpMethod.POST) :
+                userDTOSender.sendCreationEntityRequestToServer(userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword())), Links.createUser.getLink(), HttpMethod.POST) :
                 Optional.empty();
     }
 }

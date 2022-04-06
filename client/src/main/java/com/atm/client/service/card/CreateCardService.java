@@ -3,6 +3,7 @@ package com.atm.client.service.card;
 import com.atm.client.dto.CardDTO;
 import com.atm.client.service.sender.Sender;
 import com.atm.client.service.validation.ValidatorService;
+import com.atm.client.util.Links;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
@@ -22,7 +23,7 @@ public class CreateCardService {
         if (validatorService.validateCardData(number, dateValid, owner, CVV)) {
             CardDTO cardDTO = new CardDTO(number, dateValid.shortValue(), owner, CVV.shortValue(), 0.0, username, new ArrayList<>());
 
-            return cardDTOSender.sendCreationEntityRequestToServer(cardDTO, "http://localhost:9090/card/create", HttpMethod.POST);
+            return cardDTOSender.sendCreationEntityRequestToServer(cardDTO, Links.createCard.getLink(), HttpMethod.POST);
         }
 
         log.error("Validation is failed! Card has incorrect data. {}", cardDTOSender);

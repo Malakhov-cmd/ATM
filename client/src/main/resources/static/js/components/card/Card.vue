@@ -222,7 +222,7 @@ export default {
 
     requestToTopUp() {
       axios.post('/operation/create?cardNumber=' + this.card.number
-          + '&type=TopUp'
+          + '&type=Top up'
           + '&username=' + this.card.username
           + '&value=' + this.valueToOperate)
           .then(function (response) {

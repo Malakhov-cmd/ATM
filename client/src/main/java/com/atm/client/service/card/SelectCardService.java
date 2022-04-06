@@ -3,6 +3,7 @@ package com.atm.client.service.card;
 import com.atm.client.dto.CardDTO;
 import com.atm.client.dto.OperationDTO;
 import com.atm.client.service.validation.ValidatorService;
+import com.atm.client.util.Links;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
@@ -70,14 +71,14 @@ public class SelectCardService {
     }
 
     private ResponseEntity<String> sendRequestToFindAllUserCards(String username) {
-        final String uri = "http://localhost:9090/card/get/all?username=" + username;
+        final String uri = Links.findAllUserCards.getLink() + username;
 
         RestTemplate restTemplate = new RestTemplate();
         return restTemplate.getForEntity(uri, String.class);
     }
 
     private ResponseEntity<String> sendRequestToFindUserCard(String username, String cardNumber) {
-        final String uri = "http://localhost:9090/card/get/?username=" + username + "&cardNumber=" + cardNumber;
+        final String uri = Links.findUserCard.getLink() + username + "&cardNumber=" + cardNumber;
 
         RestTemplate restTemplate = new RestTemplate();
         return restTemplate.getForEntity(uri, String.class);

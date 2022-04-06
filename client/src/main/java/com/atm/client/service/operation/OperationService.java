@@ -2,6 +2,7 @@ package com.atm.client.service.operation;
 
 import com.atm.client.dto.OperationDTO;
 import com.atm.client.service.validation.ValidatorService;
+import com.atm.client.util.Links;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,10 +21,8 @@ public class OperationService {
         if (validatorService.isOperationDataValid(cardNumber, type, username, value)) {
             OperationDTO operationDTO = new OperationDTO(cardNumber, type, username, value, new Date());
 
-            final String uri = "http://localhost:9090/operation/create";
-
             RestTemplate restTemplate = new RestTemplate();
-            if (Boolean.TRUE.equals(restTemplate.postForEntity(uri, operationDTO, Boolean.class).getBody())){
+            if (Boolean.TRUE.equals(restTemplate.postForEntity(Links.createOperation.getLink(), operationDTO, Boolean.class).getBody())){
                 return operationDTO;
             }
         }
