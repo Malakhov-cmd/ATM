@@ -15,6 +15,36 @@ An application that simulates the operation of a banking terminal
 >
 >As a 5+ challenge, applications should be able to switch to communicating through Apache Kafka.
 
+**Implementation**
+
+Welcome page with the possibility of authorization through Google and Github.
+
+![img of type login](https://i.ibb.co/jbzY3RT/welcompage.jpg)
+
+Google login example.
+
+![img of google login example](https://i.ibb.co/V2P09Cg/register.jpg)
+
+Filling in bank card information.
+
+![img of filling card info](https://i.ibb.co/71SYMB0/inputcard.jpg)
+
+Created bank card.
+
+![img of created card](https://i.ibb.co/pXhsTzh/createdcard.jpg)
+
+Selecting the type of transaction and the amount for it.
+
+![img of test how make operation](https://i.ibb.co/85bPrG1/createoperation.jpg)
+
+Demonstration of the history of their change in the state of the account using a graph.
+
+![img of test graphic of operations](https://i.ibb.co/fNqNjWM/historygraph.jpg)
+
+Demonstration of the history of their change in the state of the account using a graph.
+
+![img of test table of operations](https://i.ibb.co/GMHY7Bz/tablehistory.jpg)
+
 **About project**
 
 Program components:
@@ -135,6 +165,6 @@ To see graphical reports on the results of the tests performed, open ```teminal 
 
 Example of tets results:
 
-![img of test result](client\src\main\resources\static\img\report\Report.png)
+![img of test result](https://i.ibb.co/WWqy4B0/Report.png)
 
 To enable the frontend side don't forget to run the ``` npm start``` command.
