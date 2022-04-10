@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ATM</title>
+
+    <script th:inline="javascript">
+        frontendData = [[${user}]];
+    </script>
+</head>
+<body class="text-center text-white bg-dark" id="vantaId">
+<div id="app"></div>
+
+<script th:src="${isDevMode} ? 'http://localhost:8000/main.js' : '/js/main.js'"></script>
+<script type="text/javascript" th:src="@{/js/plugin/three.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/plugin/vanta.waves.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/plugin/vantaDot.js}"></script>
+</body>
+</html>

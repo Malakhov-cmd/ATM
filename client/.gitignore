@@ -31,3 +31,11 @@ build/
 
 ### VS Code ###
 .vscode/
+
+node_modules
+
+allure-results
+
+package-lock.json
+
+/src/main/resources/static/img/report/**
