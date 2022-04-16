@@ -168,3 +168,12 @@ Example of tets results:
 ![img of test result](https://i.ibb.co/WWqy4B0/Report.png)
 
 To enable the frontend side don't forget to run the ``` npm start``` command.
+
+
+In order to make it easier for you to deal with the launch, I have prepared special scripts that you can find in the project root folder.
+
+Run them in the following order:
+
+1. ```start-server.bat```,
+2. ```start-client.bat```,
+3. ```start-front-side.bat```.
