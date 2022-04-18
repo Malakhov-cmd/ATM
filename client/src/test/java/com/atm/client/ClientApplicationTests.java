@@ -9,7 +9,8 @@ class ClientApplicationTests {
 
     @Test
     void contextLoads() {
-
+        System.setProperty("TypeOfSpringAppsCommunication", "rest");
+        System.setProperty("Profile", "dev");
     }
 
 }

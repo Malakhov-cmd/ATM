@@ -352,7 +352,7 @@ export default {
 
         clearInterval(interval)
       }
-    }, 10)
+    }, 400)
   }
 }
 </script>

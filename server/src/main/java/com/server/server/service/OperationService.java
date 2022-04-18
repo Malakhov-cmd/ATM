@@ -8,6 +8,8 @@ import com.server.server.repo.OperationRepo;
 import com.server.server.service.utils.DataObjectParser;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,6 +19,7 @@ public class OperationService {
     private OperationRepo operationRepo;
     private CardRepo cardRepo;
 
+    private final KafkaTemplate<Long, OperationDTO> kafkaCreateOperationDTOTemplate;
     private DataObjectParser dataObjectParser;
 
     public synchronized boolean createOperation(OperationDTO operationDTO) {
@@ -47,5 +50,15 @@ public class OperationService {
     private void savingValues(Card card, Operation newOperation) {
         operationRepo.save(newOperation);
         cardRepo.save(card);
+    }
+
+    @KafkaListener(
+            id = "RequestCreateOperation",
+            topics = {"operation.request.selectCard"},
+            containerFactory = "singleFactoryOperation"
+    )
+    public void createOperationConsume(OperationDTO operationDTO) {
+        kafkaCreateOperationDTOTemplate
+                .send("server.request.create.operation", createOperation(operationDTO) ? operationDTO : new OperationDTO());
     }
 }

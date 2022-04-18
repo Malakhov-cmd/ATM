@@ -8,15 +8,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.regex.Pattern;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,9 +27,29 @@ import java.util.stream.Collectors;
 public class SelectCardService {
     private ValidatorService validatorService;
 
+    private Environment env;
+
+    private final KafkaTemplate<Long, String> kafkaSelectAllCardsTemplate;
+    private volatile List<CardDTO> tmpUserCards;
+
+    private final KafkaTemplate<Long, CardDTO> kafkaSelectCardTemplate;
+    private volatile CardDTO cardDTO;
+
     public List<CardDTO> getCards(String username) {
+        if (Objects.equals(env.getProperty("TypeOfSpringAppsCommunication"), "rest"))
+            return getCardsRest(username);
+        return getCardsKafka(username);
+    }
+
+    private List<CardDTO> getCardsRest(String username) {
         return validatorService.isValidUsername(username) ?
                 getAllUserCards(username) :
+                new ArrayList<>();
+    }
+
+    private List<CardDTO> getCardsKafka(String username) {
+        return validatorService.isValidUsername(username) ?
+                getAllUserCardsKafka(username) :
                 new ArrayList<>();
     }
 
@@ -44,10 +66,82 @@ public class SelectCardService {
         return new ArrayList<>();
     }
 
+    private List<CardDTO> getAllUserCardsKafka(String username) {
+        this.tmpUserCards.clear();
+        kafkaSelectAllCardsTemplate.send("client.request.selectAllCards", username);
+
+        try {
+            return getUserCardsWhenConsumerBeReady().get();
+        } catch (InterruptedException | ExecutionException e) {
+            log.error("Error! type {}", e.getClass());
+        }
+        return new ArrayList<>();
+    }
+
+    private Future<List<CardDTO>> getUserCardsWhenConsumerBeReady() {
+        return CompletableFuture
+                .supplyAsync(() -> {
+                    while (this.tmpUserCards.isEmpty()) ;
+                    return this.tmpUserCards;
+                });
+    }
+
+    @KafkaListener(
+            id = "RequestSelectAll",
+            topics = {"server.request.selectAllCards"},
+            containerFactory = "singleFactorySelectAll"
+    )
+    public void selectAllCardsConsume(Set<CardDTO> cardsFromServer) {
+        tmpUserCards.addAll(cardsFromServer);
+    }
+
     public CardDTO getCard(String username, String cardNumber) {
+        if (Objects.equals(env.getProperty("TypeOfSpringAppsCommunication"), "rest"))
+            return getCardRest(username, cardNumber);
+        return getCardKafka(username, cardNumber);
+    }
+
+    private CardDTO getCardRest(String username, String cardNumber) {
         return validatorService.isValidUsernameAndCardNumber(username, cardNumber) ?
                 getUserCard(username, cardNumber) :
                 new CardDTO();
+    }
+
+    private CardDTO getCardKafka(String username, String cardNumber) {
+        return validatorService.isValidUsernameAndCardNumber(username, cardNumber) ?
+                getCardKafkaProducer(username, cardNumber) :
+                new CardDTO();
+    }
+
+    private CardDTO getCardKafkaProducer(String username, String cardNumber) {
+        this.cardDTO = new CardDTO();
+        kafkaSelectCardTemplate
+                .send("client.request.selectCard", new CardDTO().setUsername(username).setNumber(Long.parseLong(cardNumber)));
+
+        try {
+            return getCardWhenConsumerBeReady().get();
+        } catch (InterruptedException | ExecutionException e) {
+            log.error("Error! type {}", e.getClass());
+        }
+
+        return new CardDTO();
+    }
+
+    private Future<CardDTO> getCardWhenConsumerBeReady() {
+        return CompletableFuture
+                .supplyAsync(() -> {
+                    while (this.cardDTO.getNumber() == 0L) ;
+                    return this.cardDTO;
+                });
+    }
+
+    @KafkaListener(
+            id = "RequestSelectCard",
+            topics = {"server.request.selectCard"},
+            containerFactory = "singleFactory"
+    )
+    public void selectCardConsume(CardDTO cardFromServer) {
+        this.cardDTO = cardFromServer;
     }
 
     private CardDTO getUserCard(String username, String cardNumber) {
