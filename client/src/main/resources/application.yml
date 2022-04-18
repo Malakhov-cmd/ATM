@@ -1,6 +1,4 @@
 spring:
-  profiles:
-    active: dev
   security:
     oauth2:
       client:
@@ -11,5 +9,14 @@ spring:
           github:
             clientId: 90ebce1b93ab0b7d2cf5
             clientSecret: a896d0b2f96bb1c8c915eacbb276e6d95c09d727
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: server.broadcast
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: "*"
 server:
   port: 9000

@@ -9,6 +9,8 @@ import com.server.server.repo.UserDetailsRepo;
 import com.server.server.service.utils.DataObjectParser;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -25,6 +27,9 @@ public class CardService {
     private UserDetailsRepo userDetailsRepo;
 
     private DataObjectParser dataObjectParser;
+
+    private final KafkaTemplate<Long, Set<CardDTO>> kafkaSelectAllTemplate;
+    private final KafkaTemplate<Long, CardDTO> kafkaTemplateToCreateCard;
 
     public synchronized void createCard(CardDTO cardDTO) {
         Optional<Card> foundCard = Optional
@@ -45,6 +50,16 @@ public class CardService {
         }
     }
 
+    @KafkaListener(
+            id = "Request",
+            topics = {"client.request.create.card"},
+            containerFactory = "singleFactory"
+    )
+    public void createCardConsume(CardDTO cardDTOFromClient) {
+        createCard(cardDTOFromClient);
+        kafkaTemplateToCreateCard.send("server.response.create.card", cardDTOFromClient);
+    }
+
     private Card fillingNewCardData(CardDTO cardDTO, User owner) {
         return dataObjectParser.cardDTOtoCardDAO(cardDTO)
                 .setUser(owner)
@@ -61,6 +76,15 @@ public class CardService {
                 .collect(Collectors.toSet());
     }
 
+    @KafkaListener(
+            id = "RequestSelectAll",
+            topics = {"client.request.selectAllCards"},
+            containerFactory = "singleFactoryToSelectAll"
+    )
+    public void selectAllCardsConsume(String username) {
+        kafkaSelectAllTemplate.send("server.request.selectAllCards", getUserCards(new UserDTO().setUsername(username)));
+    }
+
     public CardDTO getUserCard(String username, String cardNumber) {
         Optional<Card> card = userDetailsRepo
                 .findByUserName(username)
@@ -70,5 +94,14 @@ public class CardService {
                 .findFirst();
 
         return card.isPresent() ? dataObjectParser.cardDAOtoCardDTO(card.get()) : new CardDTO();
+    }
+
+    @KafkaListener(
+            id = "RequestSelectCard",
+            topics = {"client.request.selectCard"},
+            containerFactory = "singleFactory"
+    )
+    public void selectCardConsume(CardDTO cardDTOFromClient) {
+        kafkaTemplateToCreateCard.send("server.request.selectCard", getUserCard(cardDTOFromClient.getUsername(), String.valueOf(cardDTOFromClient.getNumber())));
     }
 }

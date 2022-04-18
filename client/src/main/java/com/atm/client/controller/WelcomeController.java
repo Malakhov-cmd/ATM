@@ -2,9 +2,11 @@ package com.atm.client.controller;
 
 import com.atm.client.dto.UserDTO;
 import com.atm.client.service.user.CreateUserService;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
@@ -14,13 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping()
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Slf4j
 public class WelcomeController {
-    @Value("${spring.profiles.active}")
-    private String activeProfile;
-
-    private final CreateUserService createUserService;
+    private Environment env;
+    private CreateUserService createUserService;
 
     @GetMapping("/")
     public String loadTemplate(
@@ -37,7 +37,7 @@ public class WelcomeController {
             model.addAttribute("user", new UserDTO());
         }
 
-        model.addAttribute("isDevMode", "dev".equals(activeProfile));
+        model.addAttribute("isDevMode", "dev".equals(env.getProperty("Profile")));
         return "index";
     }
 }

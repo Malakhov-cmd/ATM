@@ -5,6 +5,8 @@ import com.server.server.repo.UserDetailsRepo;
 import com.server.server.service.utils.DataObjectParser;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -15,9 +17,10 @@ import java.util.Optional;
 public class UserService {
     private UserDetailsRepo userDetailsRepo;
 
+    private final KafkaTemplate<Long, UserDTO> kafkaCreateUserDTOTemplate;
     private DataObjectParser dataObjectParser;
 
-    public synchronized void createUser(UserDTO userDTO){
+    public synchronized void createUser(UserDTO userDTO) {
         if (!isAlreadyRegistered(userDTO)) {
             log.info("User with  this credential not found!");
 
@@ -30,5 +33,16 @@ public class UserService {
         return Optional
                 .ofNullable(userDetailsRepo.findByUserName(userDTO.getUsername()))
                 .isPresent();
+    }
+
+    @KafkaListener(
+            id = "RequestCreateUser",
+            topics = {"user.request.create"},
+            containerFactory = "singleFactoryUser"
+    )
+    public void selectUserConsume(UserDTO userFromClientDTO) {
+        createUser(userFromClientDTO);
+        kafkaCreateUserDTOTemplate
+                .send("server.request.create.user", userFromClientDTO);
     }
 }

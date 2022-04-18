@@ -242,7 +242,7 @@ export default {
 
             this.card.balance = Number( this.card.balance) + Number(this.valueToOperate)
 
-            this.valueToOperate = ''
+            this.valueToOperate = 0
 
             this.operationLocalListUpdate()
             this.fillingTable()
@@ -352,7 +352,8 @@ export default {
       params: {
         username: frontendData.username,
         cardNumber: this.cardNumber
-      }
+      },
+      timeout: 10000
     })
         .then(function (response) {
           isSentAndReceived = true
